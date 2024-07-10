@@ -11,13 +11,15 @@ class User(db.Model):
     is_admin = db.Column(db.Boolean, default=False)
 
     posts = db.relationship("Post", back_populates="user")
+    comments = db.relationship("Comment", back_populates="user")
 
 
 class UserSchema(ma.Schema):
     posts = fields.List(fields.Nested('PostSchema', exclude=["user"]))
+    comments = fields.List(fields.Nested('CommentSchema', exclude=["user"]))
     
     class Meta:
-        fields = ["id", "username", "email", "password", "is_admin"]
+        fields = ["id", "username", "email", "password", "is_admin", "posts", "comment"]
 
 
 user_schema = UserSchema(exclude=["password"])

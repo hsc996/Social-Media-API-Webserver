@@ -23,6 +23,9 @@ def create_app():
     from controllers.post_controller import posts_bp
     app.register_blueprint(posts_bp)
 
+    from controllers.comment_controller import comments_bp
+    app.register_blueprint(comments_bp)
+
     from controllers.auth_controller import auth_bp
     app.register_blueprint(auth_bp)
 

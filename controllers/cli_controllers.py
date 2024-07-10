@@ -5,6 +5,7 @@ from flask import Blueprint
 from init import db, bcrypt
 from models.user import User
 from models.post import Post
+from models.comment import Comment
 
 db_commands = Blueprint("db", __name__)
 
@@ -57,6 +58,40 @@ def seed_tables():
     ]
 
     db.session.add_all(posts)
+
+    comments = [
+        Comment(
+            comment_body="First Comment",
+            timestamp=date.today(),
+            user=users[1],
+            posts=posts[0]
+        ),
+        Comment(
+            comment_body="Second Comment",
+            timestamp=date.today(),
+            user=users[1],
+            posts=posts[0]
+        ),
+        Comment(
+            comment_body="First Comment",
+            timestamp=date.today(),
+            user=users[0],
+            posts=posts[0]
+        ),
+        Comment(
+            comment_body="Second Comment",
+            timestamp=date.today(),
+            user=users[0],
+            posts=posts[0]
+        ),
+        Comment(
+            comment_body="First Comment",
+            timestamp=date.today(),
+            user=users[0],
+            posts=posts[1]
+        ),
+    ]
+    db.session.add_all(comments)
     db.session.commit()
     print("Tables seeded.")
 
