@@ -45,3 +45,22 @@ def delete_comment(post_id, comment_id):
         return {"message": f"Comment with ID '{comment_id}' deleted successfully"}
     else:
         return {"error": f"Comment with ID {comment_id} not found"}, 404
+
+
+
+# Update comment - /posts/post_id/comments/comment_id
+@comments_bp.route("/<int:comment_id>", methods=["PUT", "PATCH"])
+@jwt_required()
+def edit_comment(post_id, comment_id):
+    body_data = request.get_json()
+    stmt = db.select(Post).filter_by(id=comment_id)
+    comment = db.session.scalar(stmt)
+
+    if comment:
+        comment.comment_body = body_data.get("comment_body") or comment.comment_body
+        db.session.commit()
+        return comment_schema.dump(comment)
+    else:
+        return {"error":f"Comment with ID {comment_id} not found."}, 404
+    
+
