@@ -1,7 +1,8 @@
+from datetime import date
+
 from flask import Blueprint
 
 from init import db, bcrypt
-
 from models.user import User
 
 db_commands = Blueprint("db", __name__)
@@ -24,13 +25,13 @@ def seed_tables():
         User(
             username="admin",
             email="admin@email.com",
-            password="123456",
+            password=bcrypt.generate_password_hash("123456").decode('utf-8'),
             is_admin=True
         ),
         User(
             username="username1",
             email="user1@email.com",
-            password="123456"
+            password=bcrypt.generate_password_hash("123456").decode('utf-8')
         )
     ]
 
