@@ -12,15 +12,17 @@ class Post(db.Model):
 
     user = db.relationship("User", back_populates="posts")
     comments = db.relationship("Comment", back_populates="posts", cascade="all, delete")
+    likes = db.relationship("Like", back_populates="posts")
 
 
 
 class PostSchema(ma.Schema):
     user = fields.Nested('UserSchema', only=["id", "username", "email"])
     comments = fields.List(fields.Nested("CommentSchema", exclude=["posts"]))
+    likes = fields.List(fields.Nested('LikeSchema'))
 
     class Meta:
-        fields = ["id", "body", "timestamp", "user", "comments"]
+        fields = ["id", "body", "timestamp", "user", "comments", "likes"]
 
 
 post_schema = PostSchema()

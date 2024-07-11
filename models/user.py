@@ -12,14 +12,16 @@ class User(db.Model):
 
     posts = db.relationship("Post", back_populates="user")
     comments = db.relationship("Comment", back_populates="user")
+    likes = db.relationship("Like", back_populates="user")
 
 
 class UserSchema(ma.Schema):
     posts = fields.List(fields.Nested('PostSchema', exclude=["user"]))
     comments = fields.List(fields.Nested('CommentSchema', exclude=["user"]))
+    likes = fields.List(fields.Nested('LikeSchema', exclude=["user"]))
     
     class Meta:
-        fields = ["id", "username", "email", "password", "is_admin", "posts", "comment"]
+        fields = ["id", "username", "email", "password", "is_admin", "posts", "comment", "likes"]
 
 
 user_schema = UserSchema(exclude=["password"])

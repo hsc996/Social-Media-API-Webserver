@@ -6,6 +6,7 @@ from init import db, bcrypt
 from models.user import User
 from models.post import Post
 from models.comment import Comment
+from models.like import Like
 
 db_commands = Blueprint("db", __name__)
 
@@ -92,6 +93,29 @@ def seed_tables():
         ),
     ]
     db.session.add_all(comments)
+
+    likes = [
+        Like(
+            user=users[0],
+            posts=posts[0]
+        ),
+        Like(
+            user=users[0],
+            posts=posts[1]
+        ),
+        Like(
+            user=users[0],
+            posts=posts[1]
+        ),
+        Like(
+            user=users[0],
+            posts=posts[1]
+        ),
+        Like(
+            user=users[1],
+            posts=posts[2]
+        )
+    ]
+    db.session.add_all(likes)
     db.session.commit()
     print("Tables seeded.")
-
