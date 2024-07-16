@@ -7,6 +7,7 @@ from marshmallow import ValidationError
 from init import db
 from models.comment import Comment, comment_schema, comments_schema
 from models.post import Post, post_schema, posts_schema
+from utils import authorise_as_admin
 
 
 comments_bp = Blueprint("comments", __name__, url_prefix="/<int:post_id>/comments")
@@ -22,7 +23,7 @@ def create_comment(post_id):
         post = db.session.scalar(stmt)
 
         if post is None:
-            return {"error": f"Post with ID {post_id} not found."}, 404
+            return {"error": f"Post with ID '{post_id}' not found."}, 404
         
         comment = Comment(
             comment_body=body_data.get("comment_body"),
@@ -51,11 +52,15 @@ def delete_comment(post_id, comment_id):
         stmt = db.select(Comment).filter_by(id=comment_id)
         comment = db.session.scalar(stmt)
 
-        if not comment:
-            return {"error": f"Comment with ID {comment_id} not found"}, 404
+        if comment is None:
+            return {"error": f"Comment with ID '{comment_id}' not found"}, 404
+
+        is_admin = authorise_as_admin()
+        if not is_admin and str(comment.user_id) != get_jwt_identity():
+            return {"error": f"Unauthorized to delete: you are not the owner of this comment."}, 403
         
         if comment.post_id != post_id:
-            return {"error": f"Comment with ID {comment_id} does not belong to Post with ID {post_id}"}, 404
+            return {"error": f"Comment with ID '{comment_id}' does not belong to Post with ID {post_id}"}, 404
         
         db.session.delete(comment)
         db.session.commit()
@@ -67,7 +72,6 @@ def delete_comment(post_id, comment_id):
         return {"error": "Internal Server Error"}, 500
 
 
-
 # Update comment - PUT, PATCH - /posts/<int:post_id>/comments/<int:comment_id>
 @comments_bp.route("/<int:comment_id>", methods=["PUT", "PATCH"])
 @jwt_required()
@@ -77,11 +81,15 @@ def edit_comment(post_id, comment_id):
         stmt = db.select(Comment).filter_by(id=comment_id)
         comment = db.session.scalar(stmt)
 
-        if not comment:
-            return {"error": f"Comment with ID {comment_id} not found"}, 404
+        if comment is None:
+            return {"error": f"Comment with ID '{comment_id}' not found"}, 404
+        
+        is_admin = authorise_as_admin()
+        if not is_admin and str(comment.user_id) != get_jwt_identity():
+            return {"error": f"Unauthorized to edit: you are not the owner of this comment."}, 403
         
         if comment.post_id != post_id:
-            return {"error": f"Comment with ID {comment_id} does not belong to Post with ID {post_id}"}, 404
+            return {"error": f"Comment with ID '{comment_id}' does not belong to Post with ID {post_id}"}, 404
         
         comment.comment_body = body_data.get("comment_body") or comment.comment_body
         db.session.commit()
@@ -91,6 +99,6 @@ def edit_comment(post_id, comment_id):
         return {"error": str(e)}, 400
     
     except Exception as e:
-        return {"error": "Internal Server Error."}, 500
+        return {"error": "Internal Server Error"}, 500
     
 
