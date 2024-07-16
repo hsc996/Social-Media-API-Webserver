@@ -7,6 +7,7 @@ from marshmallow import ValidationError
 from init import db, ma
 from models.like import Like, like_schema, likes_schema
 from models.post import Post, post_schema, posts_schema
+from utils import authorise_as_admin
 
 
 likes_bp = Blueprint("likes", __name__, url_prefix="/posts/<int:post_id>/likes")
@@ -37,6 +38,10 @@ def like_post(post_id):
 
         if post is None:
             return {"error": f"Post with ID {post_id} not found."}, 404
+        
+        is_admin = authorise_as_admin()
+        if not is_admin and str(post.user_id) == str(user_id):
+            return {"error": f"You cannot like your own post."}, 403
         
         existing_like = Like.query.filter_by(user_id=user_id, post_id=post.id).first()
         if existing_like:
@@ -72,6 +77,10 @@ def unlike_post(post_id):
         existing_like = Like.query.filter_by(user_id=user_id, post_id=post.id).first()
         if not existing_like:
             return {"error": "Like not found"}, 404
+        
+        is_admin = authorise_as_admin()
+        if not is_admin and str(existing_like.user_id) != str(user_id):
+            return {"error": "Unauthorized to unlike: you are not the owner of this like."}, 403
         
         db.session.delete(existing_like)
         db.session.commit()
