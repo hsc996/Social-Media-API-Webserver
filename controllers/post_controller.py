@@ -2,7 +2,6 @@ from datetime import date
 
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from sqlalchemy.orm.exc import NoResultFound
 from marshmallow import ValidationError
 
 from init import db, ma
@@ -15,26 +14,25 @@ posts_bp.register_blueprint(comments_bp)
 
 
 
-# /posts - GET - fetch all posts
+# Fetch all post - GET - /posts
 @posts_bp.route("/")
 def get_all_posts():
     stmt = db.select(Post).order_by(Post.timestamp.desc())
     posts = db.session.scalars(stmt)
-    return posts_schema.dump(posts)
+    return posts_schema.dump(posts), 200
 
 
-# /posts/<id> - GET - fetch a single post
+# Fetch a single post - GET - /posts/<int:post_id>
 @posts_bp.route("/<int:post_id>")
 def get_single_post(post_id):
-    try:
-        stmt = db.select(Post).filter_by(id=post_id)
-        post = db.session.scalar(stmt)
-        return post_schema.dump(post)
-    except NoResultFound:
-        return {"error": f"Post with id {post_id} not found"}, 404
+    stmt = db.select(Post).filter_by(id=post_id)
+    post = db.session.scalar(stmt)
+    if post is None:
+        return {"error": f"Post with ID {post_id} not found."}, 404
+    return post_schema.dump(post), 200
 
 
-# /posts - POST - create a new post
+# Create a post - POST - /posts
 @posts_bp.route("/", methods=["POST"])
 @jwt_required()
 def create_post():
@@ -52,7 +50,7 @@ def create_post():
         db.session.add(post)
         db.session.commit()
 
-        return post_schema.dump(post)
+        return post_schema.dump(post), 201
     
     except ValidationError as e:
         return {"error": str(e)}, 400
@@ -63,7 +61,7 @@ def create_post():
 
 
 
-# /posts/<id> - DELETE - delete a post
+# Delete a post - DELETE - /posts/<int:post_id>
 @posts_bp.route("/<int:post_id>", methods=["DELETE"])
 @jwt_required()
 def delete_post(post_id):
@@ -71,17 +69,17 @@ def delete_post(post_id):
         stmt = db.select(Post).filter_by(id=post_id)
         post = db.session.scalar(stmt)
 
+        if post is None:
+            return {"error":f"Post with ID {post_id} not found"}, 404
+
         is_admin = authorise_as_admin()
-        if not is_admin or str(post.user_id) != get_jwt_identity():
+        if not is_admin and str(post.user_id) != get_jwt_identity():
             return {"error": f"Unauthorized to delete: you are not the owner of this post."}, 403
         
         db.session.delete(post)
         db.session.commit()
 
-        return {"message":f"Post with ID {post_id} successfully deleted."}
-    
-    except NoResultFound:
-        return {"error":f"Post with ID {post_id} not found"}, 404
+        return {"message":f"Post with ID {post_id} successfully deleted."}, 200
     
     except Exception as e:
         db.session.rollback()
@@ -89,7 +87,7 @@ def delete_post(post_id):
     
 
 
-# /posts/<id> - PUT, PATCH - edit a post
+# Edit a post - PUT, PATCH - /posts/<int:post_id>
 @posts_bp.route("/<int:post_id>", methods=["PUT", "PATCH"])
 @jwt_required()
 def update_post(post_id):
@@ -98,8 +96,11 @@ def update_post(post_id):
         stmt = db.select(Post).filter_by(id=post_id)
         post = db.session.scalar(stmt)
 
+        if post is None:
+            return {"error": f"Post with ID {post_id} not found."}, 404
+
         is_admin = authorise_as_admin()
-        if not is_admin or str(post.user_id) != get_jwt_identity():
+        if not is_admin and str(post.user_id) != get_jwt_identity():
             return {"error": f"Unauthorized to delete: you are not the owner of this post."}, 403
         
         post.body = body_data.get("body") or post.body
@@ -107,14 +108,12 @@ def update_post(post_id):
 
         db.session.commit()
         
-        return post_schema.dump(post)
+        return post_schema.dump(post), 200
     
     except ValidationError as e:
         return {"error": str(e)}, 400
-
-    except NoResultFound:
-        return {"error":f"Post with ID {post_id} not found."}, 404
     
     except Exception as e:
+        db.session.rollback()
         return {"error": "Internal Server Error"}, 500
     
