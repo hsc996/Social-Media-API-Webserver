@@ -2,10 +2,12 @@ from datetime import date
 
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
+from sqlalchemy.orm.exc import NoResultFound
 
 from init import db, ma
 from models.post import Post, post_schema, posts_schema
 from controllers.comment_controller import comments_bp
+from utils import authorise_as_admin
 
 posts_bp = Blueprint("posts", __name__, url_prefix="/posts")
 posts_bp.register_blueprint(comments_bp)
@@ -23,11 +25,11 @@ def get_all_posts():
 # /posts/<id> - GET - fetch a single post
 @posts_bp.route("/<int:post_id>")
 def get_single_post(post_id):
-    stmt = db.select(Post).filter_by(id=post_id)
-    post = db.session.scalar(stmt)
-    if post:
+    try:
+        stmt = db.select(Post).filter_by(id=post_id)
+        post = db.session.scalar(stmt)
         return post_schema.dump(post)
-    else:
+    except NoResultFound:
         return {"error": f"Post with id {post_id} not found"}, 404
 
 
@@ -36,6 +38,10 @@ def get_single_post(post_id):
 @jwt_required()
 def create_post():
     body_data = request.get_json()
+
+    if not body_data or not body_data.get("body"):
+        return {"error": "Invalid request body"}, 400
+    
     post = Post(
         body=body_data.get("body"),
         timestamp=date.today(),
@@ -47,6 +53,7 @@ def create_post():
     return post_schema.dump(post)
 
 
+
 # /posts/<id> - DELETE - delete a post
 @posts_bp.route("/<int:post_id>", methods=["DELETE"])
 @jwt_required()
@@ -54,16 +61,19 @@ def delete_post(post_id):
     stmt = db.select(Post).filter_by(id=post_id)
     post = db.session.scalar(stmt)
 
-    if not post:
-        return {"error":f"Post with ID {post_id} not found"}, 404
-    
-    if str(post.user_id) != get_jwt_identity():
-        return {"error": f"Unauthorized to delete: you are not the owner of this post."}, 403
-    
-    db.session.delete(post)
-    db.session.commit()
+    try:
+        is_admin = authorise_as_admin()
+        if not is_admin or str(post.user_id) != get_jwt_identity():
+            return {"error": f"Unauthorized to delete: you are not the owner of this post."}, 403
+        
+        db.session.delete(post)
+        db.session.commit()
 
-    return {"message":f"Post with ID {post_id} successfully deleted."}
+        return {"message":f"Post with ID {post_id} successfully deleted."}
+    
+    except NoResultFound:
+        return {"error":f"Post with ID {post_id} not found"}, 404
+
 
 
 # /posts/<id> - PUT, PATCH - edit a post
@@ -74,16 +84,17 @@ def update_post(post_id):
     stmt = db.select(Post).filter_by(id=post_id)
     post = db.session.scalar(stmt)
 
-    if not post:
-        return {"error":f"Post with ID {post_id} not found."}, 404
-    
-    if str(post.user_id) != get_jwt_identity():
-        return {"error": f"Unauthorized to delete: you are not the owner of this post."}, 403
-    
-    post.body = body_data.get("body") or post.body
-    post.timestamp = body_data.get("timestamp") or post.timestamp
+    try:
+        is_admin = authorise_as_admin()
+        if not is_admin or str(post.user_id) != get_jwt_identity():
+            return {"error": f"Unauthorized to delete: you are not the owner of this post."}, 403
+        
+        post.body = body_data.get("body") or post.body
+        post.timestamp = body_data.get("timestamp") or post.timestamp
 
-    db.session.commit()
-    
-    return post_schema.dump(post)
+        db.session.commit()
+        
+        return post_schema.dump(post)
+    except NoResultFound:
+        return {"error":f"Post with ID {post_id} not found."}, 404
     
