@@ -29,6 +29,9 @@ def create_app():
     from controllers.comment_controller import comments_bp
     app.register_blueprint(comments_bp)
 
+    # from controllers.like_controller import follower_bp
+    # app.register_blueprint(follower_bp)
+
     from controllers.auth_controller import auth_bp
     app.register_blueprint(auth_bp)
 

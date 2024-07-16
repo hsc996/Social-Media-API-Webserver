@@ -7,6 +7,7 @@ from models.user import User
 from models.post import Post
 from models.comment import Comment
 from models.like import Like
+# from models.follower import Follower
 
 db_commands = Blueprint("db", __name__)
 
@@ -74,19 +75,19 @@ def seed_tables():
             posts=posts[0]
         ),
         Comment(
-            comment_body="First Comment",
+            comment_body="Third Comment",
             timestamp=date.today(),
             user=users[0],
             posts=posts[0]
         ),
         Comment(
-            comment_body="Second Comment",
+            comment_body="Fourth Comment",
             timestamp=date.today(),
             user=users[0],
             posts=posts[0]
         ),
         Comment(
-            comment_body="First Comment",
+            comment_body="Fifth Comment",
             timestamp=date.today(),
             user=users[0],
             posts=posts[1]
@@ -116,6 +117,17 @@ def seed_tables():
             posts=posts[2]
         )
     ]
+    # followers = [
+    #         Follower(
+    #             follower_id=users[1].id,
+    #             followed_id=users[0].id
+    #         ),
+    #         Follower(
+    #             follower_id=users[0].id,
+    #             followed_id=users[1].id
+    #         )
+    #     ]
+
     db.session.add_all(likes)
     db.session.commit()
     print("Tables seeded.")
