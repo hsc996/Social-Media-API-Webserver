@@ -10,11 +10,7 @@ from controllers.comment_controller import comments_bp
 posts_bp = Blueprint("posts", __name__, url_prefix="/posts")
 posts_bp.register_blueprint(comments_bp)
 
-# /posts - GET - fetch all posts
-# /posts/<id> - GET - fetch a single post
-# /posts - POST - create a new post
-# /posts/<id> - DELETE - delete a post
-# /posts/<id> - PUT, PATCH - edit a post
+
 
 # /posts - GET - fetch all posts
 @posts_bp.route("/")
@@ -57,13 +53,17 @@ def create_post():
 def delete_post(post_id):
     stmt = db.select(Post).filter_by(id=post_id)
     post = db.session.scalar(stmt)
-    if post:
-        db.session.delete(post)
-        db.session.commit()
 
-        return {"message":f"Post with ID {post_id} successfully deleted."}
-    else:
+    if not post:
         return {"error":f"Post with ID {post_id} not found"}, 404
+    
+    if str(post.user_id) != get_jwt_identity():
+        return {"error": f"Unauthorized to delete: you are not the owner of this post."}, 403
+    
+    db.session.delete(post)
+    db.session.commit()
+
+    return {"message":f"Post with ID {post_id} successfully deleted."}
 
 
 # /posts/<id> - PUT, PATCH - edit a post
@@ -74,16 +74,16 @@ def update_post(post_id):
     stmt = db.select(Post).filter_by(id=post_id)
     post = db.session.scalar(stmt)
 
-    if post:
-        if str(post.user_id) != get_jwt_identity():
-            return {"error": f"Unauthorized to delete: you are not the owner of this post."}, 403
-        
-        post.body = body_data.get("body") or post.body
-        post.timestamp = body_data.get("timestamp") or post.timestamp
-
-        db.session.commit()
-        
-        return post_schema.dump(post)
-    else:
+    if not post:
         return {"error":f"Post with ID {post_id} not found."}, 404
+    
+    if str(post.user_id) != get_jwt_identity():
+        return {"error": f"Unauthorized to delete: you are not the owner of this post."}, 403
+    
+    post.body = body_data.get("body") or post.body
+    post.timestamp = body_data.get("timestamp") or post.timestamp
+
+    db.session.commit()
+    
+    return post_schema.dump(post)
     

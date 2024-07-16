@@ -43,7 +43,7 @@ def follow(user_id):
     current_user_id = get_jwt_identity()
 
     if current_user_id == user_id:
-        return {"error": "You can not follow or unfollow yourself"}
+        return {"error": "You can not follow or unfollow yourself"}, 400
     
     stmt = db.select(User).filter_by(id=user_id)
     user_to_follow = db.session.scalar(stmt)
@@ -72,7 +72,7 @@ def unfollow_user(user_id):
     current_user_id = get_jwt_identity()
 
     if current_user_id == user_id:
-        return {"error": "You can not follow or unfollow yourself"}
+        return {"error": "You can not follow or unfollow yourself"}, 400
     
     stmt = db.select(User).filter_by(id=user_id)
     user_to_unfollow = db.session.scalar(stmt)
