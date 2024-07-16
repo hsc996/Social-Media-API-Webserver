@@ -36,8 +36,10 @@ def register_user():
         if err.orig.pgcode == errorcodes.NOT_NULL_VIOLATION:
             return {"error": f"The column {err.orig.diag.column_nameq} required"}, 409
             # unique violation
-        if err.orig.pgcode == errorcodes.UNIQUE_VIOLATION:
+        elif err.orig.pgcode == errorcodes.UNIQUE_VIOLATION:
             return {"error": "Email address already in use"}, 409
+        else:
+            return {"error": "Database error"}, 500
 
 
 
@@ -50,7 +52,7 @@ def login_user():
 
     if user and bcrypt.check_password_hash(user.password, body_data.get("password")):
         token = create_access_token(identity=str(user.id), expires_delta=timedelta(days=1))
-        return {"email": user.email, "is_admin": user.is_admin, "token": token}
+        return {"email": user.email, "is_admin": user.is_admin, "token": token}, 200
     else:
         return {"error": "Invalid email or password"}, 401
     
