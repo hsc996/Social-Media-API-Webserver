@@ -7,7 +7,7 @@ from models.user import User
 from models.post import Post
 from models.comment import Comment
 from models.like import Like
-# from models.follower import Follower
+from models.follower import Follower
 
 db_commands = Blueprint("db", __name__)
 
@@ -35,6 +35,16 @@ def seed_tables():
         User(
             username="username1",
             email="user1@email.com",
+            password=bcrypt.generate_password_hash("123456").decode('utf-8')
+        ),
+        User(
+            username="username2",
+            email="user2@email.com",
+            password=bcrypt.generate_password_hash("123456").decode('utf-8')
+        ),
+        User(
+            username="username3",
+            email="user3@email.com",
             password=bcrypt.generate_password_hash("123456").decode('utf-8')
         )
     ]
@@ -117,17 +127,28 @@ def seed_tables():
             posts=posts[2]
         )
     ]
-    # followers = [
-    #         Follower(
-    #             follower_id=users[1].id,
-    #             followed_id=users[0].id
-    #         ),
-    #         Follower(
-    #             follower_id=users[0].id,
-    #             followed_id=users[1].id
-    #         )
-    #     ]
-
     db.session.add_all(likes)
     db.session.commit()
+
+    followers = [
+        Follower(
+            follower_id=users[1].id,
+            followed_id=users[0].id
+        ),
+        Follower(
+            follower_id=users[0].id,
+            followed_id=users[1].id
+        ),
+        Follower(
+            follower_id=users[0].id,
+            followed_id=users[3].id
+        ),
+        Follower(
+            follower_id=users[2].id,
+            followed_id=users[1].id
+        )
+    ]
+    db.session.add_all(followers)
+    db.session.commit()
+
     print("Tables seeded.")

@@ -1,6 +1,6 @@
 from init import db, ma
 from marshmallow import fields
-# from models.follower import Follower
+from models.follower import Follower
 
 class User(db.Model):
     __tablename__ = "users"
@@ -15,37 +15,21 @@ class User(db.Model):
     comments = db.relationship("Comment", back_populates="user")
     likes = db.relationship("Like", back_populates="user")
 
-    # followers_assoc = db.relationship(
-    #     "Follower",
-    #     foreign_keys=[Follower.followed_id],
-    #     back_populates="followed",
-    #     lazy="dynamic",
-    #     cascade="all, delete-orphan"
-    # )
+    followers_assoc = db.relationship(
+        "Follower",
+        foreign_keys=[Follower.followed_id],
+        back_populates="followed",
+        lazy="dynamic",
+        cascade="all, delete-orphan"
+    )
 
-    # following_assoc = db.relationship(
-    #     "Follower",
-    #     foreign_keys=[Follower.follower_id],
-    #     back_populates="followed",
-    #     lazy="dynamic",
-    #     cascade="all, delete-orphan"
-    # )
-
-    # def follow(self, user):
-    #     if not self.is_following(user):
-    #         new_follower = Follower(follower_id=self.id, followed_id=user.id)
-    #         db.session.add(new_follower)
-
-    # def unfollow(self, user):
-    #     follower = self.following_assoc.filter_by(followed_id=user.id).first()
-    #     if follower:
-    #         db.session.delete(follower)
-
-    # def is_following(self, user):
-    #     return self.following_assoc.filter_by(followed_id=user.id).count() > 0
-
-    # def is_followed_by(self, user):
-    #     return self.followers_assoc.filter_by(follower_id=user.id).count() > 0
+    following_assoc = db.relationship(
+        "Follower",
+        foreign_keys=[Follower.follower_id],
+        back_populates="followed",
+        lazy="dynamic",
+        cascade="all, delete-orphan"
+    )
     
 
 
@@ -57,7 +41,7 @@ class UserSchema(ma.Schema):
     following = fields.List(fields.Nested('UserSchema', only=["id", "username"]))
     
     class Meta:
-        fields = ["id", "username", "email", "password", "is_admin", "posts", "comment", "likes"]
+        fields = ["id", "username", "email", "password", "is_admin", "posts", "comment", "likes", "followed", "following"]
 
 
 user_schema = UserSchema(exclude=["password"])
