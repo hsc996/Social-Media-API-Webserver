@@ -39,8 +39,7 @@ def like_post(post_id):
         if post is None:
             return {"error": f"Post with ID {post_id} not found."}, 404
         
-        is_admin = authorise_as_admin()
-        if not is_admin and str(post.user_id) == str(user_id):
+        if str(post.user_id) == str(user_id):
             return {"error": f"You cannot like your own post."}, 403
         
         existing_like = Like.query.filter_by(user_id=user_id, post_id=post.id).first()

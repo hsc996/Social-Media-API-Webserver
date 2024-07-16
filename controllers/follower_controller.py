@@ -10,7 +10,7 @@ from models.user import User
 follower_bp = Blueprint("follower", __name__, url_prefix="/users/<int:user_id>")
 
 
-# Get followers of a user - GET - /users/<user_id>/followers
+# Get followers of a user - GET - /users/<int:user_id>/followers
 @follower_bp.route("/followers", methods=["GET"])
 def get_followers(user_id):
     stmt = db.select(User).filter_by(id=user_id)
@@ -25,7 +25,7 @@ def get_followers(user_id):
 
 
 
-# Get users a specific user is following - GET - /users/<user_id>/following
+# Get users a specific user is following - GET - /users/<int:user_id>/following
 @follower_bp.route("/following", methods=["GET"])
 def get_following(user_id):
     stmt = db.select(User).filter_by(id=user_id)
@@ -40,7 +40,7 @@ def get_following(user_id):
     
 
 
-# Follow a user - POST - /users/<user_id>/followers
+# Follow a user - POST - /users/<int:user_id>/followers
 @follower_bp.route("/followers", methods=["POST"])
 @jwt_required()
 def follow(user_id):
@@ -82,7 +82,7 @@ def follow(user_id):
 
     
 
-# Unfollow a user - DELETE - /users/<user_id>/followers
+# Unfollow a user - DELETE - /users/<int:user_id>/followers
 @follower_bp.route("/followers", methods=["DELETE"])
 @jwt_required()
 def unfollow_user(user_id):
@@ -97,7 +97,7 @@ def unfollow_user(user_id):
 
         if user_to_unfollow is None:
             return {"error": f"User with ID {user_id} not found."}, 404
-        
+
         existing_follow = Follower.query.filter_by(follower_id=current_user_id, followed_id=user_id).first()
         if existing_follow is None:
             return {"error": "You are already not following this user."}, 404
