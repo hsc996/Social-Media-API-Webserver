@@ -14,7 +14,7 @@ posts_bp.register_blueprint(comments_bp)
 
 
 
-# Fetch all post - GET - /posts
+# Fetch all posts - GET - /posts
 @posts_bp.route("/")
 def get_all_posts():
     stmt = db.select(Post).order_by(Post.timestamp.desc())

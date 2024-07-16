@@ -12,7 +12,7 @@ from models.post import Post, post_schema, posts_schema
 likes_bp = Blueprint("likes", __name__, url_prefix="/posts/<int:post_id>/likes")
 
 
-# Get likes for a post - GET - /post/post_id/likes
+# Get likes for a post - GET - /post/<int:post_id>/likes
 @likes_bp.route("/", methods=["GET"])
 def get_post_likes(post_id):
     stmt = db.select(Post).filter_by(id=post_id)
@@ -26,7 +26,7 @@ def get_post_likes(post_id):
 
 
 
-# Like a post - POST - /posts/post_id/likes
+# Like a post - POST - /post/<int:post_id>/likes
 @likes_bp.route("/", methods=["POST"])
 @jwt_required()
 def like_post(post_id):
@@ -58,7 +58,7 @@ def like_post(post_id):
         return {"error": "Internal Server Error"}, 500
 
 
-# Unlike a post - DELETE - /post/post_id/likes
+# Unlike a post - DELETE - /post/<int:post_id>/likes
 @likes_bp.route("/", methods=["DELETE"])
 @jwt_required()
 def unlike_post(post_id):
