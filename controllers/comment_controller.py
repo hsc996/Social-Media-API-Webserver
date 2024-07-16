@@ -2,7 +2,7 @@ from datetime import date
 
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from marshmallow import ValidationError
+from marshmallow.exceptions import ValidationError
 
 from init import db
 from models.comment import Comment, comment_schema, comments_schema
@@ -47,18 +47,15 @@ def create_comment(post_id):
 # Delete Comment - DELETE - /posts/<int:post_id>/comments/<int:comment_id>
 @comments_bp.route("/<int:comment_id>", methods=["DELETE"])
 @jwt_required()
+@auth_user_action(Comment, "comment_id")
 def delete_comment(post_id, comment_id):
     try:
         user_id = get_jwt_identity()
         stmt = db.select(Comment).filter_by(id=comment_id)
         comment = db.session.scalar(stmt)
 
-        if comment is None:
+        if not comment:
             return {"error": f"Comment with ID '{comment_id}' not found"}, 404
-
-        is_authorised, auth_error = auth_user_action(user_id, Comment, comment_id)
-        if not is_authorised:
-            return {"error": auth_error["error_code"], "message": auth_error["message"]}, 403
         
         if comment.post_id != post_id:
             return {"error": f"Comment with ID '{comment_id}' does not belong to Post with ID {post_id}"}, 404
@@ -76,6 +73,7 @@ def delete_comment(post_id, comment_id):
 # Update comment - PUT, PATCH - /posts/<int:post_id>/comments/<int:comment_id>
 @comments_bp.route("/<int:comment_id>", methods=["PUT", "PATCH"])
 @jwt_required()
+@auth_user_action(Comment, "comment_id")
 def edit_comment(post_id, comment_id):
     try:
         user_id = get_jwt_identity()
@@ -83,12 +81,8 @@ def edit_comment(post_id, comment_id):
         stmt = db.select(Comment).filter_by(id=comment_id)
         comment = db.session.scalar(stmt)
 
-        if comment is None:
+        if not comment:
             return {"error": f"Comment with ID '{comment_id}' not found"}, 404
-        
-        is_authorised, auth_error = auth_user_action(user_id, Comment, comment_id)
-        if not is_authorised:
-            return {"error": auth_error["error_code"], "message": auth_error["message"]}, 403
         
         if comment.post_id != post_id:
             return {"error": f"Comment with ID '{comment_id}' does not belong to Post with ID {post_id}"}, 404

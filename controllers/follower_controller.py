@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from marshmallow import ValidationError
+from marshmallow.exceptions import ValidationError
 
 from init import db, ma
 from models.follower import Follower, follower_schema, followers_schema

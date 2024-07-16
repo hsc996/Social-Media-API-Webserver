@@ -2,12 +2,13 @@ from datetime import datetime, date
 
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from marshmallow import ValidationError
+from marshmallow.exceptions import ValidationError
 
-from init import db, ma
+from init import db
 from models.post import Post, post_schema, posts_schema
 from controllers.comment_controller import comments_bp
 from utils import auth_user_action
+
 
 posts_bp = Blueprint("posts", __name__, url_prefix="/posts")
 posts_bp.register_blueprint(comments_bp)
@@ -65,18 +66,12 @@ def create_post():
 # Delete a post - DELETE - /posts/<int:post_id>
 @posts_bp.route("/<int:post_id>", methods=["DELETE"])
 @jwt_required()
+@auth_user_action(Post, "post_id")
 def delete_post(post_id):
     try:
         user_id = get_jwt_identity()
         stmt = db.select(Post).filter_by(id=post_id)
         post = db.session.scalar(stmt)
-
-        if post is None:
-            return {"error":f"Post with ID {post_id} not found"}, 404
-
-        is_authorised, auth_error = auth_user_action(user_id, Post, post_id)
-        if not is_authorised:
-            return {"error": auth_error["error_code"], "message": auth_error["message"]}, 403
         
         db.session.delete(post)
         db.session.commit()
@@ -92,19 +87,13 @@ def delete_post(post_id):
 # Edit a post - PUT, PATCH - /posts/<int:post_id>
 @posts_bp.route("/<int:post_id>", methods=["PUT", "PATCH"])
 @jwt_required()
+@auth_user_action(Post, "post_id")
 def update_post(post_id):
     try:
         user_id = get_jwt_identity()
         body_data = request.get_json()
         stmt = db.select(Post).filter_by(id=post_id)
         post = db.session.scalar(stmt)
-
-        if post is None:
-            return {"error": f"Post with ID {post_id} not found."}, 404
-
-        is_authorised, auth_error = auth_user_action(user_id, Post, post_id)
-        if not is_authorised:
-            return {"error": auth_error["error_code"], "message": auth_error["message"]}, 403
         
         post.body = body_data.get("body") or post.body
         if body_data.get("timestamp"):
