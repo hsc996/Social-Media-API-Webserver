@@ -2,9 +2,7 @@ from datetime import date
 
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from sqlalchemy.orm.exc import NoResultFound
 from marshmallow import ValidationError
-
 
 from init import db, ma
 from models.like import Like, like_schema, likes_schema
@@ -20,7 +18,7 @@ def get_post_likes(post_id):
     stmt = db.select(Post).filter_by(id=post_id)
     post = db.session.scalar(stmt)
 
-    if not post:
+    if post is None:
         return {"error": f"Post with ID {post_id} not found."}, 404
         
     likes = Like.query.filter_by(post_id=post.id).all()
@@ -32,11 +30,14 @@ def get_post_likes(post_id):
 @likes_bp.route("/", methods=["POST"])
 @jwt_required()
 def like_post(post_id):
-    user_id = get_jwt_identity()
-    stmt = db.select(Post).filter_by(id=post_id)
-    post = db.session.scalar(stmt)
+    try:
+        user_id = get_jwt_identity()
+        stmt = db.select(Post).filter_by(id=post_id)
+        post = db.session.scalar(stmt)
 
-    if post:
+        if post is None:
+            return {"error": f"Post with ID {post_id} not found."}, 404
+        
         existing_like = Like.query.filter_by(user_id=user_id, post_id=post.id).first()
         if existing_like:
             return {"error": f"Post with ID {post_id} already liked."}, 400
@@ -48,20 +49,26 @@ def like_post(post_id):
         db.session.add(new_like)
         db.session.commit()
         return like_schema.dump(new_like), 201
-    else:
-        return {"error": f"Post with ID {post_id} not found."}, 404
-
+    
+    except ValidationError as e:
+        return {"error": str(e)}, 400
+    
+    except Exception as e:
+        db.session.rollback()
+        return {"error": "Internal Server Error"}, 500
 
 
 # Unlike a post - DELETE - /post/post_id/likes
 @likes_bp.route("/", methods=["DELETE"])
 @jwt_required()
 def unlike_post(post_id):
-    user_id = get_jwt_identity()
-    stmt = db.select(Post).filter_by(id=post_id)
-    post = db.session.scalar(stmt)
+    try:
+        user_id = get_jwt_identity()
+        stmt = db.select(Post).filter_by(id=post_id)
+        post = db.session.scalar(stmt)
 
-    if post:
+        if post is None:
+            return {"error": f"Post with ID {post_id} not found"}, 404
         existing_like = Like.query.filter_by(user_id=user_id, post_id=post.id).first()
         if not existing_like:
             return {"error": "Like not found"}, 404
@@ -69,5 +76,7 @@ def unlike_post(post_id):
         db.session.delete(existing_like)
         db.session.commit()
         return {"message": "Like removed"}, 200
-    else:
-        return {"error": f"Post with ID {post_id} not found"}, 404
+        
+    except Exception as e:
+        db.session.rollback()
+        return {"error": str(e)}, 500

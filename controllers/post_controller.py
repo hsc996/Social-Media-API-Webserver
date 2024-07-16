@@ -101,7 +101,7 @@ def update_post(post_id):
 
         is_admin = authorise_as_admin()
         if not is_admin and str(post.user_id) != get_jwt_identity():
-            return {"error": f"Unauthorized to delete: you are not the owner of this post."}, 403
+            return {"error": f"Unauthorized to edit: you are not the owner of this post."}, 403
         
         post.body = body_data.get("body") or post.body
         post.timestamp = body_data.get("timestamp") or post.timestamp
