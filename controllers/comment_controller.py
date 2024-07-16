@@ -7,7 +7,7 @@ from marshmallow import ValidationError
 from init import db
 from models.comment import Comment, comment_schema, comments_schema
 from models.post import Post, post_schema, posts_schema
-from utils import authorise_as_admin
+from utils import auth_user_action
 
 
 comments_bp = Blueprint("comments", __name__, url_prefix="/<int:post_id>/comments")
@@ -49,15 +49,16 @@ def create_comment(post_id):
 @jwt_required()
 def delete_comment(post_id, comment_id):
     try:
+        user_id = get_jwt_identity()
         stmt = db.select(Comment).filter_by(id=comment_id)
         comment = db.session.scalar(stmt)
 
         if comment is None:
             return {"error": f"Comment with ID '{comment_id}' not found"}, 404
 
-        is_admin = authorise_as_admin()
-        if not is_admin and str(comment.user_id) != get_jwt_identity():
-            return {"error": f"Unauthorized to delete: you are not the owner of this comment."}, 403
+        is_authorised, auth_error = auth_user_action(user_id, Comment, comment_id)
+        if not is_authorised:
+            return {"error": auth_error["error_code"], "message": auth_error["message"]}, 403
         
         if comment.post_id != post_id:
             return {"error": f"Comment with ID '{comment_id}' does not belong to Post with ID {post_id}"}, 404
@@ -77,6 +78,7 @@ def delete_comment(post_id, comment_id):
 @jwt_required()
 def edit_comment(post_id, comment_id):
     try:
+        user_id = get_jwt_identity()
         body_data = request.get_json()
         stmt = db.select(Comment).filter_by(id=comment_id)
         comment = db.session.scalar(stmt)
@@ -84,9 +86,9 @@ def edit_comment(post_id, comment_id):
         if comment is None:
             return {"error": f"Comment with ID '{comment_id}' not found"}, 404
         
-        is_admin = authorise_as_admin()
-        if not is_admin and str(comment.user_id) != get_jwt_identity():
-            return {"error": f"Unauthorized to edit: you are not the owner of this comment."}, 403
+        is_authorised, auth_error = auth_user_action(user_id, Comment, comment_id)
+        if not is_authorised:
+            return {"error": auth_error["error_code"], "message": auth_error["message"]}, 403
         
         if comment.post_id != post_id:
             return {"error": f"Comment with ID '{comment_id}' does not belong to Post with ID {post_id}"}, 404

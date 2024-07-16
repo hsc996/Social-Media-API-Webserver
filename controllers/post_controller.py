@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import datetime, date
 
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
@@ -7,7 +7,7 @@ from marshmallow import ValidationError
 from init import db, ma
 from models.post import Post, post_schema, posts_schema
 from controllers.comment_controller import comments_bp
-from utils import authorise_as_admin
+from utils import auth_user_action
 
 posts_bp = Blueprint("posts", __name__, url_prefix="/posts")
 posts_bp.register_blueprint(comments_bp)
@@ -37,20 +37,21 @@ def get_single_post(post_id):
 @jwt_required()
 def create_post():
     try:
+        user_id = get_jwt_identity()
         body_data = request.get_json()
 
         if not body_data or not body_data.get("body"):
             return {"error": "Invalid request body"}, 400
         
-        post = Post(
+        new_post = Post(
             body=body_data.get("body"),
             timestamp=date.today(),
-            user_id=get_jwt_identity()
+            user_id=user_id
         )
-        db.session.add(post)
+        db.session.add(new_post)
         db.session.commit()
 
-        return post_schema.dump(post), 201
+        return {"message": "Post created successfully", "post_id": new_post.id}, 201
     
     except ValidationError as e:
         return {"error": str(e)}, 400
@@ -66,15 +67,16 @@ def create_post():
 @jwt_required()
 def delete_post(post_id):
     try:
+        user_id = get_jwt_identity()
         stmt = db.select(Post).filter_by(id=post_id)
         post = db.session.scalar(stmt)
 
         if post is None:
             return {"error":f"Post with ID {post_id} not found"}, 404
 
-        is_admin = authorise_as_admin()
-        if not is_admin and str(post.user_id) != get_jwt_identity():
-            return {"error": f"Unauthorized to delete: you are not the owner of this post."}, 403
+        is_authorised, auth_error = auth_user_action(user_id, Post, post_id)
+        if not is_authorised:
+            return {"error": auth_error["error_code"], "message": auth_error["message"]}, 403
         
         db.session.delete(post)
         db.session.commit()
@@ -92,6 +94,7 @@ def delete_post(post_id):
 @jwt_required()
 def update_post(post_id):
     try:
+        user_id = get_jwt_identity()
         body_data = request.get_json()
         stmt = db.select(Post).filter_by(id=post_id)
         post = db.session.scalar(stmt)
@@ -99,12 +102,13 @@ def update_post(post_id):
         if post is None:
             return {"error": f"Post with ID {post_id} not found."}, 404
 
-        is_admin = authorise_as_admin()
-        if not is_admin and str(post.user_id) != get_jwt_identity():
-            return {"error": f"Unauthorized to edit: you are not the owner of this post."}, 403
+        is_authorised, auth_error = auth_user_action(user_id, Post, post_id)
+        if not is_authorised:
+            return {"error": auth_error["error_code"], "message": auth_error["message"]}, 403
         
         post.body = body_data.get("body") or post.body
-        post.timestamp = body_data.get("timestamp") or post.timestamp
+        if body_data.get("timestamp"):
+            post.timestamp = datetime.strptime(body_data["timestamp"], "%Y-%m-%d").date()
 
         db.session.commit()
         

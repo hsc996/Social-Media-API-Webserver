@@ -1,5 +1,6 @@
 # T2A2_API_Webserver
 
+
 ### 1. Explain the problem that this app will solve, and explain how this app solves or addresses the problem.
 
 
@@ -17,6 +18,9 @@
 
 ### 6. Design an entity relationship diagram (ERD) for this app’s database, and explain how the relations between the diagrammed models will aid the database design. 
 ### This should focus on the database design BEFORE coding has begun, eg. during the project planning or design phase.
+
+
+![SM_API](/docs/SocialMedia_API.jpg)
 
 
 ### 7. Explain the implemented models and their relationships, including how the relationships aid the database implementation.
