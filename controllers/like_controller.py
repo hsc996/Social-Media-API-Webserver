@@ -17,11 +17,11 @@ def get_post_likes(post_id):
     stmt = db.select(Post).filter_by(id=post_id)
     post = db.session.scalar(stmt)
 
-    if post:
-        likes = Like.query.filter_by(post_id=post.id).all()
-        return likes_schema.dump(likes), 200
-    else:
+    if not post:
         return {"error": f"Post with ID {post_id} not found."}, 404
+        
+    likes = Like.query.filter_by(post_id=post.id).all()
+    return likes_schema.dump(likes), 200
 
 
 
