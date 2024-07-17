@@ -6,6 +6,8 @@ from marshmallow.exceptions import ValidationError
 
 from init import db
 from models.post import Post, post_schema, posts_schema
+from models.like import Like
+from models.comment import Comment
 from controllers.comment_controller import comments_bp
 from utils import auth_user_action
 
@@ -38,16 +40,15 @@ def get_single_post(post_id):
 @jwt_required()
 def create_post():
     try:
-        user_id = get_jwt_identity()
         body_data = request.get_json()
 
-        if not body_data or not body_data.get("body"):
+        if not body_data or not isinstance(body_data["body"], str) or not body_data.get("body").strip():
             return {"error": "Invalid request body"}, 400
         
         new_post = Post(
             body=body_data.get("body"),
             timestamp=date.today(),
-            user_id=user_id
+            user_id=get_jwt_identity()
         )
         db.session.add(new_post)
         db.session.commit()
@@ -69,17 +70,27 @@ def create_post():
 @auth_user_action(Post, "post_id")
 def delete_post(post_id):
     try:
-        user_id = get_jwt_identity()
-        stmt = db.select(Post).filter_by(id=post_id)
-        post = db.session.scalar(stmt)
+        post = Post.query.get(post_id)
         
+        if not post:
+            return {"error": f"Post with ID {post_id} not found."}, 404
+        
+        likes = Like.query.filter_by(post_id=post_id).all()
+        for like in likes:
+            db.session.delete(like)
+
+        comments = Comment.query.filter_by(post_id=post_id).all()
+        for comment in comments:
+            db.session.delete(comment)
+
         db.session.delete(post)
         db.session.commit()
 
-        return {"message":f"Post with ID {post_id} successfully deleted."}, 200
+        return {"message": f"Post with ID {post_id} successfully deleted."}, 200
     
     except Exception as e:
         db.session.rollback()
+        print(e)
         return {"error": "Internal Server Error"}, 500
     
 

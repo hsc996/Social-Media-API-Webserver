@@ -11,6 +11,9 @@ def auth_user_action(model, id_arg_name):
             instance_id = kwargs.get(id_arg_name)
 
             if instance_id is None:
+                instance_id = args[0] if args else None
+
+            if instance_id is None:
                 return {"error": "Instance ID not provided."}, 400
 
             user = db.session.query(User).filter_by(id=user_id).first()
@@ -27,6 +30,7 @@ def auth_user_action(model, id_arg_name):
             if not is_admin and not is_owner:
                 return {"error": "Unauthorized to perform this action."}, 403
             
+            kwargs[id_arg_name] = instance_id
             return func(*args, **kwargs)
         
         return wrapper

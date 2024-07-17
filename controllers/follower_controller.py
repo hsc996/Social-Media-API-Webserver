@@ -4,7 +4,7 @@ from marshmallow.exceptions import ValidationError
 
 from init import db
 from models.follower import Follower, follower_schema, followers_schema
-from models.user import User, users_schema
+from models.user import User
 
 
 follower_bp = Blueprint("follower", __name__, url_prefix="/users")
