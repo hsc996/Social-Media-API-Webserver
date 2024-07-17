@@ -82,13 +82,13 @@ def seed_tables():
             comment_body="Second Comment",
             timestamp=date.today(),
             user=users[1],
-            posts=posts[0]
+            posts=posts[1]
         ),
         Comment(
             comment_body="Third Comment",
             timestamp=date.today(),
             user=users[0],
-            posts=posts[0]
+            posts=posts[2]
         ),
         Comment(
             comment_body="Fourth Comment",
@@ -99,7 +99,7 @@ def seed_tables():
         Comment(
             comment_body="Fifth Comment",
             timestamp=date.today(),
-            user=users[0],
+            user=users[2],
             posts=posts[1]
         ),
     ]
@@ -111,7 +111,7 @@ def seed_tables():
             posts=posts[0]
         ),
         Like(
-            user=users[0],
+            user=users[2],
             posts=posts[1]
         ),
         Like(
@@ -119,7 +119,7 @@ def seed_tables():
             posts=posts[1]
         ),
         Like(
-            user=users[0],
+            user=users[3],
             posts=posts[1]
         ),
         Like(

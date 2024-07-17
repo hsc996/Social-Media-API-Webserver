@@ -1,19 +1,17 @@
-from datetime import date
-
-from flask import Blueprint, request
+from flask import Blueprint
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
 
 from init import db, ma
 from models.like import Like, like_schema, likes_schema
-from models.post import Post, post_schema, posts_schema
+from models.post import Post
 from utils import auth_user_action
 
 
 likes_bp = Blueprint("likes", __name__, url_prefix="/posts/<int:post_id>/likes")
 
 
-# Get likes for a post - GET - /post/<int:post_id>/likes
+# Fetch all likes on a post - GET - /post/<int:post_id>/likes
 @likes_bp.route("/", methods=["GET"])
 def get_post_likes(post_id):
     stmt = db.select(Post).filter_by(id=post_id)
@@ -36,7 +34,7 @@ def like_post(post_id):
         stmt = db.select(Post).filter_by(id=post_id)
         post = db.session.scalar(stmt)
 
-        if post is None:
+        if not post:
             return {"error": f"Post with ID {post_id} not found."}, 404
         
         if str(post.user_id) == str(user_id):
@@ -60,6 +58,7 @@ def like_post(post_id):
     except Exception as e:
         db.session.rollback()
         return {"error": "Internal Server Error"}, 500
+
 
 
 # Unlike a post - DELETE - /post/<int:post_id>/likes/<int:like_id>
