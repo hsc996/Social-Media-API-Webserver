@@ -11,7 +11,9 @@ class Follower(db.Model):
     follower = db.relationship("User", foreign_keys=[follower_id], back_populates="following_assoc")
     followed = db.relationship("User", foreign_keys=[followed_id], back_populates="followers_assoc")
 
-
+    __table_args__ = (
+        db.UniqueConstraint('follower_id', 'followed_id', name='unique_follow_pair'),
+    )
 
 class FollowerSchema(ma.Schema):
     class Meta:

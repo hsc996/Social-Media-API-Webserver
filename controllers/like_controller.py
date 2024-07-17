@@ -79,10 +79,6 @@ def unlike_post(post_id, like_id):
         if not existing_like:
             return {"error": "Like not found"}, 404
         
-        # is_authorised, auth_error = auth_user_action(user_id, Like, existing_like.id)
-        # if not is_authorised:
-        #     return {"error": auth_error["error_code"], "message": auth_error["message"]}, 403
-        
         db.session.delete(existing_like)
         db.session.commit()
         return {"message": "Like removed"}, 200

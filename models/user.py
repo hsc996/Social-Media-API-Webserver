@@ -26,7 +26,7 @@ class User(db.Model):
     following_assoc = db.relationship(
         "Follower",
         foreign_keys=[Follower.follower_id],
-        back_populates="followed",
+        back_populates="follower",
         lazy="dynamic",
         cascade="all, delete-orphan"
     )

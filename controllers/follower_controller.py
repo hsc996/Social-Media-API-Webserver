@@ -2,16 +2,16 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
 
-from init import db, ma
+from init import db
 from models.follower import Follower, follower_schema, followers_schema
-from models.user import User
+from models.user import User, users_schema
 
 
-follower_bp = Blueprint("follower", __name__, url_prefix="/users/<int:user_id>")
+follower_bp = Blueprint("follower", __name__, url_prefix="/users")
 
 
 # Get followers of a user - GET - /users/<int:user_id>/followers
-@follower_bp.route("/followers", methods=["GET"])
+@follower_bp.route("/<int:user_id>/followers", methods=["GET"])
 def get_followers(user_id):
     stmt = db.select(User).filter_by(id=user_id)
     user = db.session.scalar(stmt)
@@ -19,48 +19,50 @@ def get_followers(user_id):
     if user is None:
         return {"error": f"User with ID {user_id} not found."}, 404
     
-    followers = Follower.query.filter_by(followed_id=user_id).all()
+    followers = user.followers_assoc.all()
     return followers_schema.dump(followers), 200
 
 
 
-
 # Get users a specific user is following - GET - /users/<int:user_id>/following
-@follower_bp.route("/following", methods=["GET"])
+@follower_bp.route("/<int:user_id>/following", methods=["GET"])
 def get_following(user_id):
-    stmt = db.select(User).filter_by(id=user_id)
-    user = db.session.scalar(stmt)
+    # Check if the user exists
+    user_stmt = db.select(User).filter_by(id=user_id)
+    user = db.session.scalar(user_stmt)
 
     if user is None:
         return {"error": f"User with ID {user_id} not found."}, 404
-    
-    following = Follower.query.filter_by(follower_id=user_id).all()
-    return followers_schema.dump(following), 200
+
+    followed_stmt = db.select(Follower.followed_id).filter_by(follower_id=user_id)
+    followed_ids = db.session.scalars(followed_stmt).all()
+
+    if not followed_ids:
+        return {"message": "This user is not following anyone."}, 200
+
+    following_list = [{"follower_id": user_id, "followed_id": followed_id} for followed_id in followed_ids]
+
+    return following_list, 200
 
     
 
 
-# Follow a user - POST - /users/<int:user_id>/followers
-@follower_bp.route("/followers", methods=["POST"])
+# Follow a user - POST - /users/follow
+@follower_bp.route("/follow", methods=["POST"])
 @jwt_required()
-def follow(user_id):
+def follow():
     current_user_id = get_jwt_identity()
-
     try:
-        schema = follower_schema
-        validated_data = schema.load(request.json)
-        followed_id = validated_data["user_id"]
+        followed_id = request.json.get("followed_id")
 
-        if current_user_id == followed_id:
-            return {"error": "You cannot follow or unfollow yourself"}, 400
-
-        stmt = db.select(User).filter_by(id=followed_id)
-        user_to_follow = db.session.scalar(stmt)
-
+        user_to_follow = User.query.get(followed_id)
         if user_to_follow is None:
-            return {"error": f"User with ID {user_id} not found"}, 404
+            return {"error": f"User with ID {followed_id} not found"}, 404
 
-        existing_follow = Follower.query.filter_by(follower_id=current_user_id, followed_id=user_id).first()
+        if int(current_user_id) == int(followed_id):
+            return {"error": "You cannot follow yourself."}, 400
+
+        existing_follow = Follower.query.filter_by(follower_id=current_user_id, followed_id=followed_id).first()
         if existing_follow:
             return {"error": "You are already following this user."}, 400
         
@@ -79,6 +81,8 @@ def follow(user_id):
     except Exception as e:
         db.session.rollback()
         return {"error": str(e)}, 500
+
+
 
     
 

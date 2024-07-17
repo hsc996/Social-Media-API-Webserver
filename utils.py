@@ -11,21 +11,21 @@ def auth_user_action(model, id_arg_name):
             instance_id = kwargs.get(id_arg_name)
 
             if instance_id is None:
-                return {"error": "INSTANCE_ID_NOT_PROVIDED", "message": "Instance ID not provided."}, 400
+                return {"error": "Instance ID not provided."}, 400
 
             user = db.session.query(User).filter_by(id=user_id).first()
             if not user:
-                return {"error": "USER_NOT_FOUND", "message": "User not found"}, 404
+                return {"error": "User not found"}, 404
     
             instance = db.session.query(model).filter_by(id=instance_id).first()
             if not instance:
-                return {"error": "INSTANCE_NOT_FOUND", "message": f"{model.__name__} with ID {instance_id} not found."}, 404
+                return {"error": f"{model.__name__} with ID {instance_id} not found."}, 404
             
             is_admin = user.is_admin
             is_owner = str(instance.user_id) == str(user_id)
 
             if not is_admin and not is_owner:
-                return {"error": "UNAUTHORIZED", "message": "Unauthorized to perform this action."}, 403
+                return {"error": "Unauthorized to perform this action."}, 403
             
             return func(*args, **kwargs)
         
