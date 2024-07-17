@@ -54,8 +54,9 @@ def follow():
     current_user_id = get_jwt_identity()
     try:
         followed_id = request.json.get("followed_id")
+        stmt = db.select(User).where(User.id == followed_id)
+        user_to_follow = db.session.scalar(stmt)
 
-        user_to_follow = User.query.get(followed_id)
         if user_to_follow is None:
             return {"error": f"User with ID {followed_id} not found"}, 404
 
@@ -84,20 +85,18 @@ def follow():
 
 
 
-    
 
-# Unfollow a user - DELETE - /users/<int:user_id>/followers
-@follower_bp.route("/followers", methods=["DELETE"])
+# Unfollow a user - DELETE - /users/<int:user_id>/unfollow
+@follower_bp.route("/<int:user_id>/unfollow", methods=["DELETE"])
 @jwt_required()
 def unfollow_user(user_id):
     current_user_id = get_jwt_identity()
-
-    if current_user_id == user_id:
-        return {"error": "You cannot follow or unfollow yourself."}, 400
-    
     try:
         stmt = db.select(User).filter_by(id=user_id)
         user_to_unfollow = db.session.scalar(stmt)
+
+        if int(current_user_id) == int(user_id):
+            return {"error": "You cannot follow or unfollow yourself."}, 400
 
         if user_to_unfollow is None:
             return {"error": f"User with ID {user_id} not found."}, 404
