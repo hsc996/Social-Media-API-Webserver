@@ -2,7 +2,7 @@ from flask import Blueprint
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
 
-from init import db, ma
+from init import db
 from models.like import Like, like_schema, likes_schema
 from models.post import Post
 from utils import auth_user_action
