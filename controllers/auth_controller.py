@@ -12,6 +12,19 @@ from models.user import User, user_schema, UserSchema
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
 
 
+# View User Profile - GET - /auth/user/<int:user_id>
+@auth_bp.route("/user/<int:user_id>", methods=["GET"])
+def view_profile(user_id):
+    stmt = db.select(User).filter_by(id=user_id)
+    profile = db.session.scalar(stmt)
+
+    if profile:
+        return user_schema.dump(profile), 200
+    else:
+        return {"error": f"User with ID {user_id} not found."}
+
+
+
 # Register new user - POST - /auth/register
 @auth_bp.route("register", methods=["POST"])
 def register_user():
@@ -39,6 +52,12 @@ def register_user():
             return {"error": "Required field missing"}, 409
         elif err.orig.pgcode == errorcodes.UNIQUE_VIOLATION:
             return {"error": "Email address already in use"}, 409
+        elif err.orig.pgcode == errorcodes.FOREIGN_KEY_VIOLATION:
+            return {"error": "Invalid reference to another table"}, 409
+        elif err.orig.pgcode == errorcodes.CHECK_VIOLATION:
+            return {"error": "Check constraint failed"}, 409
+        elif err.orig.pgcode == errorcodes.EXCLUSION_VIOLATION:
+            return {"error": "Exclusion constraint failed"}, 409
         else:
             return {"error": "Database error"}, 500
 
@@ -58,6 +77,7 @@ def login_user():
     else:
         return {"error": "Invalid email or password"}, 401
     
+
 
 # Update user - PUT, PATCH - auth/users/user_id
 @auth_bp.route("/users", methods=["PUT", "PATCH"])

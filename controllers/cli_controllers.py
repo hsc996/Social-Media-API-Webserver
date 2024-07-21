@@ -30,22 +30,58 @@ def seed_tables():
             username="admin",
             email="admin@email.com",
             password=bcrypt.generate_password_hash("123456").decode('utf-8'),
-            is_admin=True
+            is_admin=True,
+            profile_picture_url="http://example.com/admin.jpg",
+            bio="Administrator of the platform",
+            date_of_birth=date(1981, 5, 25),
+            location="Palo Alto, CA",
+            website_url="http://admin.com",
+            linkedin_url="http://linkedin.com/admin",
+            github_url="http://github.com/admin",
+            skills=["Python", "Java", "C++"],
+            job_title="Admin"
         ),
         User(
             username="username1",
             email="user1@email.com",
-            password=bcrypt.generate_password_hash("123456").decode('utf-8')
+            password=bcrypt.generate_password_hash("123456").decode('utf-8'),
+            profile_picture_url="http://example.com/user1.jpg",
+            bio="Coding is my life!",
+            date_of_birth=date(1990, 6, 15),
+            location="New York, NY",
+            website_url="http://user1.com",
+            linkedin_url="http://linkedin.com/user1",
+            github_url="http://github.com/user1",
+            skills=["Javascript", "React", "Node.js"],
+            job_title="Software Developer"
         ),
         User(
             username="username2",
             email="user2@email.com",
-            password=bcrypt.generate_password_hash("123456").decode('utf-8')
+            password=bcrypt.generate_password_hash("123456").decode('utf-8'),
+            profile_picture_url="http://example.com/user2.png",
+            bio="Passionate about open-source.",
+            date_of_birth=date(1992, 7, 25),
+            location="Austin, TX",
+            website_url="http://user2.com",
+            linkedin_url="http://linkedin.com/in/user2",
+            github_url="http://github.com/user2",
+            skills=["Java", "Spring", "Docker"],
+            job_title="Backend Engineer"
         ),
         User(
             username="username3",
             email="user3@email.com",
-            password=bcrypt.generate_password_hash("123456").decode('utf-8')
+            password=bcrypt.generate_password_hash("123456").decode('utf-8'),
+            profile_picture_url="http://example.com/user3.png",
+            bio="AI enthusiast.",
+            date_of_birth=date(1995, 8, 30),
+            location="Seattle, WA",
+            website_url="http://user3.com",
+            linkedin_url="http://linkedin.com/in/user3",
+            github_url="http://github.com/user3",
+            skills=["Machine Learning", "Data Science", "Python"],
+            job_title="Data Scientist"
         )
     ]
 

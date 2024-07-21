@@ -10,7 +10,16 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String, nullable=False)
     email = db.Column(db.String, nullable=False, unique=True)
-    password = db.Column(db.String(150), nullable=False)
+    password = db.Column(db.String, nullable=False)
+    profile_picture_url = db.Column(db.String)
+    bio = db.Column(db.String)
+    date_of_birth = db.Column(db.Date)
+    location = db.Column(db.String)
+    website_url = db.Column(db.String)
+    linkedin_url = db.Column(db.String)
+    github_url = db.Column(db.String)
+    skills = db.Column(db.ARRAY(db.String))
+    job_title = db.Column(db.String)
     is_admin = db.Column(db.Boolean, default=False)
 
     posts = db.relationship("Post", back_populates="user")
@@ -57,8 +66,18 @@ class UserSchema(ma.Schema):
         validate=Length(min=5, max=15, error="Username must be between 5 and 15 characters long.")
     )
     
+    profile_picture_url = fields.String()
+    bio = fields.String()
+    date_of_birth = fields.Date()
+    location = fields.String()
+    website_url = fields.String()
+    linkedin_url = fields.String()
+    github_url = fields.String()
+    skills = fields.List(fields.String())
+    job_title = fields.String()
+
     class Meta:
-        fields = ["id", "username", "email", "password", "is_admin", "posts", "comment", "likes", "followed", "following"]
+        fields = ["id", "username", "email", "password", "profile_picture_url", "bio", "date_of_birth", "location", "website_url", "linkedin_url", "github_url", "skills", "job_title", "is_admin", "posts", "comment", "likes", "followed", "following"]
 
 
 user_schema = UserSchema(exclude=["password"])
