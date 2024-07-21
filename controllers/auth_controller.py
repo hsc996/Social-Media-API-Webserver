@@ -34,10 +34,9 @@ def register_user():
         return user_schema.dump(user), 201
     
     except IntegrityError as err:
-        # not null violation
+        db.session.rollback()
         if err.orig.pgcode == errorcodes.NOT_NULL_VIOLATION:
-            return {"error": f"The column {err.orig.diag.column_nameq} required"}, 409
-            # unique violation
+            return {"error": "Required field missing"}, 409
         elif err.orig.pgcode == errorcodes.UNIQUE_VIOLATION:
             return {"error": "Email address already in use"}, 409
         else:

@@ -1,7 +1,7 @@
 from init import db, ma
 from marshmallow import fields
 from models.follower import Follower
-from marshmallow.validate import Regexp
+from marshmallow.validate import Regexp, Length
 
 
 class User(db.Model):
@@ -42,9 +42,20 @@ class UserSchema(ma.Schema):
     followers = fields.List(fields.Nested('UserSchema', only=["id", "username"]))
     following = fields.List(fields.Nested('UserSchema', only=["id", "username"]))
 
-    email = fields.String(required=True, validate=Regexp("^\S+@\S+\.\S+$", error="Invalid Email Format"))
+    email = fields.String(
+        required=True,
+        validate=Regexp("^\S+@\S+\.\S+$", error="Invalid Email Format")
+        )
 
-    password = fields.String(required=True, validate=Regexp("^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"), error="Password must be minimum of 8 characters with at least one letter and one number.")
+    password = fields.String(
+        required=True,
+        validate=Regexp("^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"), error="Password must be minimum of 8 characters with at least one letter and one number."
+        )
+    
+    username = fields.String(
+        required=True,
+        validate=Length(min=5, max=15, error="Username must be between 5 and 15 characters long.")
+    )
     
     class Meta:
         fields = ["id", "username", "email", "password", "is_admin", "posts", "comment", "likes", "followed", "following"]

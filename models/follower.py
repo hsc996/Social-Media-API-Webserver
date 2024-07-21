@@ -1,5 +1,6 @@
 from init import db, ma
-from marshmallow import fields
+from marshmallow import fields, validates, ValidationError
+from marshmallow.validate import Range, OneOf
 
 class Follower(db.Model):
 
@@ -16,6 +17,27 @@ class Follower(db.Model):
     )
 
 class FollowerSchema(ma.Schema):
+
+    follower_id = fields.Integer(
+        required=True,
+        validate=Range(min=1, error="Follower ID must be a positive integer.")
+    )
+
+    followed_id = fields.Integer(
+        required=True,
+        validate=Range(min=1, error="Followed ID must be a positive integer.")
+    )
+
+    @validates("follower_id")
+    def validate_follower_id(self, value):
+        if value <= 0:
+            raise ValidationError("Follower ID must be a positive integer.")
+    
+    @validates("followed_id")
+    def validate_followed_id(self, value):
+        if value <= 0:
+            raise ValidationError("Follower ID must be a positive integer.")
+
     class Meta:
         fields = ["follower_id", "followed_id"]
 

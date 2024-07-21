@@ -67,8 +67,13 @@ def create_comment(post_id):
         if post is None:
             return {"error": f"Post with ID '{post_id}' not found."}, 404
         
+        comment_body = body_data.get("comment_body", "").strip()
+
+        if not comment_body or len(comment_body) > 200:
+            return {"error": "Comment body must be between 1 and 200 characters and cannot be empty."}, 400
+        
         comment = Comment(
-            comment_body=body_data.get("comment_body"),
+            comment_body=comment_body,
             timestamp=date.today(),
             post_id=post.id,
             user_id=get_jwt_identity()
@@ -141,7 +146,12 @@ def edit_comment(post_id, comment_id):
         if comment.post_id != post_id:
             return {"error": f"Comment with ID '{comment_id}' does not belong to Post with ID {post_id}"}, 404
         
-        comment.comment_body = body_data.get("comment_body") or comment.comment_body
+        comment_body = body_data.get("comment_body")
+
+        if comment_body and len(comment_body) > 200:
+            return {"error": "Comment body must be between 1 and 200 characters."}, 400
+        
+        comment.comment_body = comment_body or comment.comment_body
         db.session.commit()
         return comment_schema.dump(comment), 200
     

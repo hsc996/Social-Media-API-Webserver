@@ -75,13 +75,8 @@ def delete_post(post_id):
         if not post:
             return {"error": f"Post with ID {post_id} not found."}, 404
         
-        likes = Like.query.filter_by(post_id=post_id).all()
-        for like in likes:
-            db.session.delete(like)
-
-        comments = Comment.query.filter_by(post_id=post_id).all()
-        for comment in comments:
-            db.session.delete(comment)
+        db.session.query(Like).filter_by(post_id=post_id).delete()
+        db.session.query(Comment).filter_by(post_id=post_id).delete()
 
         db.session.delete(post)
         db.session.commit()
