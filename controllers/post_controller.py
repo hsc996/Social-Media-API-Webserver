@@ -40,7 +40,7 @@ def get_single_post(post_id):
 @jwt_required()
 def create_post():
     try:
-        body_data = request.get_json()
+        body_data = post_schema.load(request.get_json())
 
         if not body_data or not isinstance(body_data["body"], str) or not body_data.get("body").strip():
             return {"error": "Invalid request body"}, 400
@@ -101,12 +101,14 @@ def delete_post(post_id):
 @auth_user_action(Post, "post_id")
 def update_post(post_id):
     try:
-        user_id = get_jwt_identity()
-        body_data = request.get_json()
+        body_data = post_schema.load(request.get_json(), partial=True)
         stmt = db.select(Post).filter_by(id=post_id)
         post = db.session.scalar(stmt)
-        
-        post.body = body_data.get("body") or post.body
+
+        if not post:
+            return {"error": f"Post with ID {post_id} not found."}, 404
+
+        post.body = body_data.get("body", post.body)
         if body_data.get("timestamp"):
             post.timestamp = datetime.strptime(body_data["timestamp"], "%Y-%m-%d").date()
 
@@ -115,9 +117,10 @@ def update_post(post_id):
         return post_schema.dump(post), 200
     
     except ValidationError as e:
-        return {"error": str(e)}, 400
+        return {"error": e.messages}, 400
     
     except Exception as e:
         db.session.rollback()
         return {"error": "Internal Server Error"}, 500
+
     

@@ -1,6 +1,8 @@
 from init import db, ma
 from marshmallow import fields
 from models.follower import Follower
+from marshmallow.validate import Regexp
+
 
 class User(db.Model):
     __tablename__ = "users"
@@ -39,6 +41,10 @@ class UserSchema(ma.Schema):
     likes = fields.List(fields.Nested('LikeSchema', exclude=["user"]))
     followers = fields.List(fields.Nested('UserSchema', only=["id", "username"]))
     following = fields.List(fields.Nested('UserSchema', only=["id", "username"]))
+
+    email = fields.String(required=True, validate=Regexp("^\S+@\S+\.\S+$", error="Invalid Email Format"))
+
+    password = fields.String(required=True, validate=Regexp("^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"), error="Password must be minimum of 8 characters with at least one letter and one number.")
     
     class Meta:
         fields = ["id", "username", "email", "password", "is_admin", "posts", "comment", "likes", "followed", "following"]
