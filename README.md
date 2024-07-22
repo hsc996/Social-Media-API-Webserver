@@ -24,12 +24,12 @@ objective references and statistics to support this answer
 Github project board: https://github.com/users/hsc996/projects/4
 
 
-_Github Kanban_
+#### _Github Kanban_
 
 ![github_kanban](/src/docs/github_kanban.png)
 
 
-_Github Roadmap_
+#### _Github Roadmap_
 
 
 ![github_roadmap1](/src/docs/github_roadmap1.png)
