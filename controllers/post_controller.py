@@ -18,7 +18,7 @@ posts_bp.register_blueprint(comments_bp)
 
 
 # Fetch all posts - GET - /posts
-@posts_bp.route("/")
+@posts_bp.route("/", methods=["GET"])
 def get_all_posts():
     stmt = db.select(Post).order_by(Post.timestamp.desc())
     posts = db.session.scalars(stmt)
@@ -26,7 +26,7 @@ def get_all_posts():
 
 
 # Fetch a single post - GET - /posts/<int:post_id>
-@posts_bp.route("/<int:post_id>")
+@posts_bp.route("/<int:post_id>", methods=["GET"])
 def get_single_post(post_id):
     stmt = db.select(Post).filter_by(id=post_id)
     post = db.session.scalar(stmt)

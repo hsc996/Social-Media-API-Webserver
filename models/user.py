@@ -1,5 +1,5 @@
 from init import db, ma
-from marshmallow import fields
+from marshmallow import fields, validate
 from models.follower import Follower
 from marshmallow.validate import Regexp, Length
 
@@ -22,6 +22,7 @@ class User(db.Model):
     job_title = db.Column(db.String)
     is_admin = db.Column(db.Boolean, default=False)
 
+    threads = db.relationship("Thread", back_populates="user")
     posts = db.relationship("Post", back_populates="user")
     comments = db.relationship("Comment", back_populates="user")
     likes = db.relationship("Like", back_populates="user")
@@ -45,6 +46,7 @@ class User(db.Model):
 
 
 class UserSchema(ma.Schema):
+    threads = fields.List(fields.Nested('ThreadSchema', exclude=["user"]))
     posts = fields.List(fields.Nested('PostSchema', exclude=["user"]))
     comments = fields.List(fields.Nested('CommentSchema', exclude=["user"]))
     likes = fields.List(fields.Nested('LikeSchema', exclude=["user"]))
@@ -52,18 +54,19 @@ class UserSchema(ma.Schema):
     following = fields.List(fields.Nested('UserSchema', only=["id", "username"]))
 
     email = fields.String(
-        required=True,
-        validate=Regexp("^\S+@\S+\.\S+$", error="Invalid Email Format")
-        )
+    required=True,
+    validate=validate.Regexp(r"^\S+@\S+\.\S+$", error="Invalid Email Format")
+    )
 
     password = fields.String(
         required=True,
-        validate=Regexp("^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"), error="Password must be minimum of 8 characters with at least one letter and one number."
-        )
-    
+        validate=validate.Regexp(r"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"), 
+        error="Password must be a minimum of 8 characters with at least one letter and one number."
+    )
+
     username = fields.String(
         required=True,
-        validate=Length(min=5, max=15, error="Username must be between 5 and 15 characters long.")
+        validate=validate.Length(min=5, max=15, error="Username must be between 5 and 15 characters long.")
     )
     
     profile_picture_url = fields.String()
@@ -77,7 +80,7 @@ class UserSchema(ma.Schema):
     job_title = fields.String()
 
     class Meta:
-        fields = ["id", "username", "email", "password", "profile_picture_url", "bio", "date_of_birth", "location", "website_url", "linkedin_url", "github_url", "skills", "job_title", "is_admin", "posts", "comment", "likes", "followed", "following"]
+        fields = ["id", "username", "email", "password", "profile_picture_url", "bio", "date_of_birth", "location", "website_url", "linkedin_url", "github_url", "skills", "job_title", "is_admin", "posts", "comment", "likes", "followed", "following", "threads"]
 
 
 user_schema = UserSchema(exclude=["password"])

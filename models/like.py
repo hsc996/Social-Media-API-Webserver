@@ -10,13 +10,13 @@ class Like(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey("posts.id"), nullable=False)
 
-    user = db.relationship('User', back_populates="likes")
-    posts = db.relationship('Post', back_populates="likes")
+    user = db.relationship("User", back_populates="likes")
+    posts = db.relationship("Post", back_populates="likes")
 
 
 class LikeSchema(ma.Schema):
-    user = fields.Nested('UserSchema', only=["id", "username", "email"])
-    posts = fields.Nested('PostSchema', only=["id"])
+    user = fields.Nested("UserSchema", only=["id", "username", "email"])
+    posts = fields.Nested("PostSchema", only=["id"])
 
     class Meta:
         fields = ["id", "user", "posts"]
