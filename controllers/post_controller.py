@@ -8,13 +8,13 @@ from init import db
 from models.post import Post, post_schema, posts_schema
 from models.like import Like
 from models.comment import Comment
+from models.thread import Thread
 from controllers.comment_controller import comments_bp
 from utils import auth_user_action
 
 
 posts_bp = Blueprint("posts", __name__, url_prefix="/posts")
 posts_bp.register_blueprint(comments_bp)
-
 
 
 # Fetch all posts - GET - /posts
@@ -117,5 +117,39 @@ def update_post(post_id):
     except Exception as e:
         db.session.rollback()
         return {"error": "Internal Server Error"}, 500
-
     
+
+# Post to a specific thread - POST - /posts/threads/<int:thread_id>
+@posts_bp.route("/threads/<int:thread_id>", methods=["POST"])
+@jwt_required()
+def post_to_thread(thread_id):
+        try:
+            body_data = post_schema.load(request.get_json())
+
+            if not body_data or not isinstance(body_data["body"], str) or not body_data.get("body").strip():
+                return {"error": "Invalid request body"}, 400
+            
+            stmt = db.select(Thread).filter_by(id=thread_id)
+            thread = db.session.scalar(stmt)
+
+            if thread is None:
+                return {"error": f"Thread with ID {thread_id} not found."}, 404
+            
+            new_post = Post(
+                body=body_data.get("body"),
+                timestamp=date.today(),
+                user_id=get_jwt_identity(),
+                thread_id=thread_id
+            )
+            db.session.add(new_post)
+            db.session.commit()
+
+            return {"message": "Post created successfully", "post_id": new_post.id}, 201
+        
+        except ValidationError as e:
+            return {"error": str(e)}, 400
+    
+        except Exception as e:
+            db.session.rollback()
+            print(e)
+            return {"error": "Internal Server Error"}, 500

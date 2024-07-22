@@ -16,7 +16,7 @@ class Thread(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
 
     user = db.relationship("User", back_populates="threads")
-    posts = db.relationship("Post", back_populates="threads", cascade="all, delete-orphan")
+    posts = db.relationship("Post", back_populates="threads", lazy=True, cascade="all, delete-orphan")
 
     @validates('title')
     def validate_title(self, key, title):
@@ -36,7 +36,7 @@ class Thread(db.Model):
 class ThreadSchema(ma.SQLAlchemyAutoSchema):
 
     user = fields.Nested ("UserSchema", only=["username", "email"])
-    posts = fields.Nested("PostSchema", only=["body", "timestamp"])
+    posts = fields.Nested("PostSchema", only=["body", "timestamp"], many=True)
     title = fields.String(
         required=True,
         validate=[

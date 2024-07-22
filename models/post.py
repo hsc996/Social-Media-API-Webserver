@@ -34,6 +34,7 @@ class PostSchema(ma.SQLAlchemyAutoSchema):
 
 
     class Meta:
+        
         fields = ["id", "body", "timestamp", "user", "comments", "likes", "threads"]
 
 

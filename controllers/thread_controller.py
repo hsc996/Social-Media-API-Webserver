@@ -11,6 +11,7 @@ from marshmallow import ValidationError
 thread_bp = Blueprint("threads", __name__, url_prefix="/threads")
 
 
+
 # Fetch all threads - GET - /thread
 @thread_bp.route("/", methods=["GET"])
 def get_all_threads():
