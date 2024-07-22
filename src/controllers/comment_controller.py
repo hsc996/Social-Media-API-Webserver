@@ -14,8 +14,6 @@ comments_bp = Blueprint("comments", __name__, url_prefix="/posts/<int:post_id>/c
 
 
 
-# CONTROLLERS ALLOWING USERS TO COMMENT ON OTHER USERS POSTS
-
 
 # Fetch all comments - GET - /posts/<int:post_id>/comments
 @comments_bp.route("/", methods=["GET"])
@@ -167,7 +165,6 @@ def edit_comment(post_id, comment_id):
         return {"error": "Internal Server Error"}, 500
     
 
-# CONTROLLERS ALLOWING USERS TO COMMENT ON POSTS WITHIN INNOVATION THREADS
 
 
 

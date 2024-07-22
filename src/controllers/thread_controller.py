@@ -34,7 +34,7 @@ def get_single_thread(thread_id):
 
 
 
-# Create a thread - POST - /thread
+# Create a thread - POST - /threads
 @thread_bp.route("/", methods=["POST"])
 @jwt_required()
 def create_thread():
