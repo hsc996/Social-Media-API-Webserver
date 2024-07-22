@@ -20,8 +20,8 @@ class Comment(db.Model):
 
 
 class CommentSchema(ma.Schema):
-    user = fields.Nested("UserSchema", only=["username", "email"])
-    posts = fields.Nested("PostSchema", only=["body", "timestamp"])
+    user = fields.Nested("UserSchema", only=["username"])
+    posts = fields.Nested("PostSchema", only=["body", "timestamp", "thread_id"])
 
     comment_body = fields.String(
         required=True,

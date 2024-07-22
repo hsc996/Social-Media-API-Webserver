@@ -13,6 +13,10 @@ from utils import auth_user_action
 comments_bp = Blueprint("comments", __name__, url_prefix="/posts/<int:post_id>/comments")
 
 
+
+# CONTROLLERS ALLOWING USERS TO COMMENT ON OTHER USERS POSTS
+
+
 # Fetch all comments - GET - /posts/<int:post_id>/comments
 @comments_bp.route("/", methods=["GET"])
 def get_all_comments(post_id):
@@ -88,6 +92,7 @@ def create_comment(post_id):
     
     except Exception as e:
         db.session.rollback()
+        print(e)
         return {"error": "Internal Server Error"}, 500
 
 
@@ -161,4 +166,8 @@ def edit_comment(post_id, comment_id):
     except Exception as e:
         return {"error": "Internal Server Error"}, 500
     
+
+# CONTROLLERS ALLOWING USERS TO COMMENT ON POSTS WITHIN INNOVATION THREADS
+
+
 

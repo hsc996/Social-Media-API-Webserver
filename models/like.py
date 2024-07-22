@@ -15,7 +15,7 @@ class Like(db.Model):
 
 
 class LikeSchema(ma.Schema):
-    user = fields.Nested("UserSchema", only=["id", "username", "email"])
+    user = fields.Nested("UserSchema", only=["username"])
     posts = fields.Nested("PostSchema", only=["id"])
 
     class Meta:

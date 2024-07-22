@@ -22,9 +22,9 @@ class Post(db.Model):
 
 class PostSchema(ma.SQLAlchemyAutoSchema):
 
-    user = fields.Nested("UserSchema", only=["id", "username", "email"])
+    user = fields.Nested("UserSchema", only=["id", "username"])
     comments = fields.List(fields.Nested("CommentSchema", exclude=["posts"]))
-    likes = fields.List(fields.Nested("LikeSchema"))
+    likes = fields.List(fields.Nested("LikeSchema"), only=["id"])
     thread = fields.List(fields.Nested('InnovationThreadSchema', only=["id", "title"]))
 
     body = fields.String(required=True,

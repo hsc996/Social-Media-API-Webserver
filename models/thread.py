@@ -36,7 +36,7 @@ class InnovationThread(db.Model):
 class InnovationThreadSchema(ma.SQLAlchemyAutoSchema):
 
     user = fields.Nested ("UserSchema", only=["username", "email"])
-    posts = fields.Nested("PostSchema", only=["id", "body", "timestamp"], many=True)
+    posts = fields.Nested("PostSchema", only=["body", "timestamp", "comments", "likes"], many=True)
     title = fields.String(
         required=True,
         validate=[

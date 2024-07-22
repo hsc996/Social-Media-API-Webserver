@@ -17,6 +17,9 @@ posts_bp = Blueprint("posts", __name__, url_prefix="/posts")
 posts_bp.register_blueprint(comments_bp)
 
 
+# POST CONTROLLERS ALLOWING USERS TO POST FROM THEIR ACCOUNT
+
+
 # Fetch all posts - GET - /posts
 @posts_bp.route("/", methods=["GET"])
 def get_all_posts():
@@ -120,6 +123,11 @@ def update_post(post_id):
     
 
 
+
+# POST CONTROLLERS THAT ALLOW USERS TO POST WITHIN EXISTING INNOVATION THREADS
+
+
+
 # Get all posts on a specific thread - GET - /posts/threads/<int:thread_id>
 @posts_bp.route("threads/<int:thread_id>", methods=["GET"])
 def get_all_posts_in_thread(thread_id):
@@ -138,7 +146,7 @@ def get_all_posts_in_thread(thread_id):
     
 
 
-# Get a speicfic post on a specific thread - GET - /posts/<int:post_id>/threads/<int:thread_id>
+# Get a specfic post on a specific thread - GET - /posts/<int:post_id>/threads/<int:thread_id>
 @posts_bp.route("<int:post_id>/threads/<int:thread_id>", methods=["GET"])
 def get_posts_in_thread(thread_id, post_id):
     try:
