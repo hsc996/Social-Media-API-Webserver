@@ -8,7 +8,7 @@ from models.post import Post
 from models.comment import Comment
 from models.like import Like
 from models.follower import Follower
-from models.thread import Thread
+from models.thread import InnovationThread
 
 db_commands = Blueprint("db", __name__)
 
@@ -188,19 +188,19 @@ def seed_tables():
     db.session.add_all(followers)
 
     threads = [
-        Thread(
+        InnovationThread(
             title="Best Practices for Python Development in 2024",
             content="This thread discusses best practices for writing clean and maintainable Python code.",
             timestamp=datetime.now(),
             user_id=users[2].id
         ),
-        Thread(
+        InnovationThread(
             title="Flask vs Django: Which Framework is Better?",
             content="A comparison of Flask and Django for web development. Pros and cons of each framework.",
             timestamp=datetime.now(),
             user_id=users[1].id
         ),
-        Thread(
+        InnovationThread(
             title="Tips and Tricks for Using SQLAlchemy",
             content="Share your favorite tips and tricks for using SQLAlchemy effectively in your projects.",
             timestamp=datetime.now(),

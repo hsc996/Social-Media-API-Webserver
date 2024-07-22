@@ -13,7 +13,7 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     thread_id = db.Column(db.Integer, db.ForeignKey("threads.id"))
 
-    threads = db.relationship("Thread", back_populates="posts")
+    threads = db.relationship("InnovationThread", back_populates="posts")
     user = db.relationship("User", back_populates="posts")
     comments = db.relationship("Comment", back_populates="posts", cascade="all, delete-orphan")
     likes = db.relationship("Like", back_populates="posts")
@@ -21,10 +21,11 @@ class Post(db.Model):
 
 
 class PostSchema(ma.SQLAlchemyAutoSchema):
-    threads = fields.List(fields.Nested('ThreadSchema', exclude=["user"]))
+
     user = fields.Nested("UserSchema", only=["id", "username", "email"])
     comments = fields.List(fields.Nested("CommentSchema", exclude=["posts"]))
     likes = fields.List(fields.Nested("LikeSchema"))
+    thread = fields.List(fields.Nested('InnovationThreadSchema', only=["id", "title"]))
 
     body = fields.String(required=True,
                          validate=Length(min=1, error="Body cannot be empty.")
@@ -34,8 +35,8 @@ class PostSchema(ma.SQLAlchemyAutoSchema):
 
 
     class Meta:
-        
-        fields = ["id", "body", "timestamp", "user", "comments", "likes", "threads"]
+
+        fields = ["id", "body", "timestamp", "user", "comments", "likes", "thread"]
 
 
 post_schema = PostSchema()

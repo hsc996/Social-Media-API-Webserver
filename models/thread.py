@@ -5,7 +5,7 @@ from marshmallow import fields, validate
 from sqlalchemy import func
 from sqlalchemy.orm import validates
 
-class Thread(db.Model):
+class InnovationThread(db.Model):
     __tablename__ = "threads"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -33,10 +33,10 @@ class Thread(db.Model):
         return content
 
 
-class ThreadSchema(ma.SQLAlchemyAutoSchema):
+class InnovationThreadSchema(ma.SQLAlchemyAutoSchema):
 
     user = fields.Nested ("UserSchema", only=["username", "email"])
-    posts = fields.Nested("PostSchema", only=["body", "timestamp"], many=True)
+    posts = fields.Nested("PostSchema", only=["id", "body", "timestamp"], many=True)
     title = fields.String(
         required=True,
         validate=[
@@ -54,5 +54,5 @@ class ThreadSchema(ma.SQLAlchemyAutoSchema):
 
 
 
-thread_schema = ThreadSchema()
-threads_schema = ThreadSchema(many=True)
+thread_schema = InnovationThreadSchema()
+threads_schema = InnovationThreadSchema(many=True)

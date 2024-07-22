@@ -22,7 +22,7 @@ class User(db.Model):
     job_title = db.Column(db.String)
     is_admin = db.Column(db.Boolean, default=False)
 
-    threads = db.relationship("Thread", back_populates="user")
+    threads = db.relationship("InnovationThread", back_populates="user")
     posts = db.relationship("Post", back_populates="user")
     comments = db.relationship("Comment", back_populates="user")
     likes = db.relationship("Like", back_populates="user")
@@ -46,7 +46,7 @@ class User(db.Model):
 
 
 class UserSchema(ma.Schema):
-    threads = fields.List(fields.Nested('ThreadSchema', exclude=["user"]))
+    threads = fields.List(fields.Nested('InnovationThreadSchema', exclude=["user"]))
     posts = fields.List(fields.Nested('PostSchema', exclude=["user"]))
     comments = fields.List(fields.Nested('CommentSchema', exclude=["user"]))
     likes = fields.List(fields.Nested('LikeSchema', exclude=["user"]))
