@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from init import db, ma
+from src.init import db, ma
 from marshmallow import fields, validate
 from sqlalchemy import func
 from sqlalchemy.orm import validates

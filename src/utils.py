@@ -1,7 +1,7 @@
 from functools import wraps
 from flask_jwt_extended import get_jwt_identity
-from init import db
-from models.user import User
+from src.init import db
+from src.models.user import User
 
 def auth_user_action(model, id_arg_name):
     def decorator(func):

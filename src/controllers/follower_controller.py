@@ -2,9 +2,9 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
 
-from init import db
-from models.follower import Follower, follower_schema, followers_schema
-from models.user import User
+from src.init import db
+from src.models.follower import Follower, follower_schema, followers_schema
+from src.models.user import User
 
 
 follower_bp = Blueprint("follower", __name__, url_prefix="/users")

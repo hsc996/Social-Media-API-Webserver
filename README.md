@@ -31,6 +31,7 @@ _Github Kanban_
 
 _Github Roadmap_
 
+
 ![github_roadmap1](/src/docs/github_roadmap1.png)
 
 ![github_roadmap2](/src/docs/github_roadmap2.png)
@@ -56,7 +57,7 @@ I developed an implementation plan using a Kanban board in Github Projects, whic
 ### This should focus on the database design BEFORE coding has begun, eg. during the project planning or design phase.
 
 
-![SM_API](/docs/SocialMedia_API.jpg)
+![SM_API](src/docs/SocialMedia_API.jpg)
 
 
 ### 7. Explain the implemented models and their relationships, including how the relationships aid the database implementation.

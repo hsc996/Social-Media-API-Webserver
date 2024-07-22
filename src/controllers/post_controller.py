@@ -4,13 +4,13 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
 
-from init import db
-from models.post import Post, post_schema, posts_schema
-from models.like import Like
-from models.comment import Comment
-from models.thread import InnovationThread
-from controllers.comment_controller import comments_bp
-from utils import auth_user_action
+from src.init import db
+from src.models.post import Post, post_schema, posts_schema
+from src.models.like import Like
+from src.models.comment import Comment
+from src.models.thread import InnovationThread
+from src.controllers.comment_controller import comments_bp
+from src.utils import auth_user_action
 
 
 posts_bp = Blueprint("posts", __name__, url_prefix="/posts")

@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from init import db
+from src.init import db
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models.thread import InnovationThread, thread_schema, threads_schema
-from models.post import Post
+from src.models.thread import InnovationThread, thread_schema, threads_schema
+from src.models.post import Post
 from marshmallow import ValidationError
 
 
