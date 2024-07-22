@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from src.init import db, ma
 from sqlalchemy import func
 from marshmallow import fields
@@ -31,7 +33,7 @@ class PostSchema(ma.SQLAlchemyAutoSchema):
                          validate=Length(min=1, error="Body cannot be empty.")
                          )
     
-    timestamp = fields.DateTime(format="%Y-%m-%d")
+    timestamp = fields.DateTime(format="%Y-%m-%d %H:%M:%S", missing=datetime.now)
 
 
     class Meta:

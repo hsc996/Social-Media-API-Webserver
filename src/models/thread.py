@@ -10,7 +10,7 @@ class InnovationThread(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String, nullable=False)
-    content = db.Column(db.String)
+    content = db.Column(db.String, nullable=False)
     timestamp = db.Column(db.DateTime, default=func.now())
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)

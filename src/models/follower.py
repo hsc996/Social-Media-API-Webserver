@@ -1,6 +1,6 @@
 from src.init import db, ma
 from marshmallow import fields, validates, ValidationError
-from marshmallow.validate import Range, OneOf
+from marshmallow.validate import Range
 
 class Follower(db.Model):
 

@@ -90,17 +90,17 @@ def seed_tables():
 
     posts = [
         Post(
-            body="Body of Instagram post 1",
+            body="Body of Post 1",
             timestamp=date.today(),
             user=users[1]
         ),
         Post(
-            body="Body of Instagram post 2",
+            body="Body of Post 2",
             timestamp=date.today(),
             user=users[0]
         ),
         Post(
-            body="Body of Instagram post 3",
+            body="Body of Post 3",
             timestamp=date.today(),
             user=users[1]
         )

@@ -1,6 +1,6 @@
 from src.init import db, ma
 from marshmallow import fields, validates, ValidationError
-from marshmallow.validate import Length, Range, Regexp
+from marshmallow.validate import Length
 
 
 

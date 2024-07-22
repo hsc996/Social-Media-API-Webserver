@@ -125,6 +125,68 @@ This visualisation is essential for designing the database schema in order to ac
 ### This should focus on the database implementation AFTER coding has begun, eg. during the project development phase.
 
 
+
+**1) InnovationThread Model**
+
+This model allows the user to create a thread to facilitate innovative ideas and spark discussion with other platform users. Each attribute of this table is defined as a column, specifying the data types and constraints for each attribute. For example, the thread `id` is identified as both an integer and the primary key (`id = db.Column(db.Integer, primary_key=True)`). When posting a thread, I've ensured that the title and content (original post to start the thread) cannot be null as indicated by the `nullable=False` attributes. I've also imported the `datetime` module in order to include a timestamp of when the thread was originally created, which is set to default at the current time (`db.Column(db.DateTime, default=func.now())`). This model also includes the `user_id` as a foreign key, as this is an original attribute of the `User` model; it is linked here in order identify the creator of the thread. A many-to-one relationship is established with the `User` model, as each thread is associated with one user. Including `user = db.relationship("User", back_populates="threads")` in the model enables the retrieval of the user who created the thread. Similarly, `posts = db.relationship("Post", back_populates="threads", lazy=True, cascade="all, delete-orphan")` establishes a one-to-many relationship with the `Post` model as each thread can have multiple posts. Furthermore, the `cascade="all, delete-orphan"` option ensures that if a thread is deleted, all associated posts are also deleted. When I seed the Postgres database, I should be able to see `id` (thread, PK), `title`, `content`, `timestamp` and `user_id` as the columns of this table:
+
+![innovation_thread](/src/docs/innovation%20thread_model.png)
+
+
+
+**2) User Model**
+
+
+The User Model involves all the attributes typically found in a customary social media profile. Similarly, to the InnovationThread model, this model defines the `id` (user_id) as the primary key of the table (`primary_key=True`). Although this will be the unique identifier, the user will also be able to set their own username, password and email in order to register and log into their account. All 3 of these are core attributes, and have thus been made not nullable fields. Furthermore, the email must be unique in order to be able to register the account. In order for the user to be able to use the platform for professional networking, I've allowed a series of optional attributes for the user to include in order to share more information about themselves to their followers: `profile_picture_url`, `bio`, `date_of_birth`, `location`, `website_url`, `linkedin_url`, `github_url`, `skills`, `job_title`. The `is_admin` attribute will default to False, thus must be specified by the administrator in order to be registered as such.
+
+There are a series of relationship that have been established within this model, as all of the other models involve operations that can only be executed by the users:
+
+`threads` --> establishes a one-to-many relationship with the `InnovationThread` model, as each user can create multiple threads.
+
+`posts` --> establishes a one-to-many relationship with the `Post` model, as each user can create multiple posts.
+
+`comments` --> establishes a one-to-many relationship with the `Comment` model, as each user can make mutiple comments.
+
+`likes` --> establishes a one-to-many relationship with the `Like` model, as each user can like multiple posts.
+
+`followers_assoc` --> establishes a many-to-many self-referential relationship for tracking users who are followed.
+
+`following_assoc` --> establishes a many-to-many self-referential relationship for tracking users who follow others.
+
+Once the database is seeded, I will be able to see all of these columns within the Postgres database:
+
+![user_model](/src/docs/user_model.png)
+
+All of these attributes allow for a comprehensive user profile, particularly for individuals looking to foster new professional connections using the platform. Furthermore, relationships between models facilitates interconnectivity throughout the API.
+
+
+
+**3) Post Model**
+
+
+The post model allows the user to post from their account. The core attributes within this model involve the `id` (post_id) as the primary key, the `body` of the post (`nullable=False`) and a timestamp of when the post was created (defaults to the current time). There are 2 foreign keys identified within this model: the `user_id`, allowing identification of the user creating the post, and the `threads_id`, in the event that the  posts is posted on an existing thread.
+
+There are 4 relationships established within this model, allowing the model to interact with each respective model:
+
+`threads` --> estiblishes a many-to-one relationship with the 'InnovationThread' model, as the posts may belong to a specific thread. Having said that, the posts do not have to have a relationship with a thread and can be posted to the main feed, depending on the end point selected.
+
+`user` --> establishes a many-to-one relationship with the `User` model, as each post is created by a specific user.
+
+`comments` --> establishes a one-to-many relationship with the `Comment` model, as each post can have multiple comments.
+
+`likes` --> establishes a one-to-many relationship with the `Like` model, as each post can be liked by multiple users.
+
+The posts model allows the user to post to their main feed and within organised thread discussions. Furthermore, the relationship between this model and the 'Like' and 'Comment' models enables useer interation. When the database is seeded, we will see all of the defined columns within this model:
+
+![post_model](/src/docs/post_model.png)
+
+
+
+**4) Comment Model**
+
+
+
+
 ### 8. Explain how to use this application’s API endpoints. Each endpoint should be explained, including the following data for each endpoint:
 ### * HTTP verb
 ### * Path or route
