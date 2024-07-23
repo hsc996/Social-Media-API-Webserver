@@ -109,7 +109,7 @@ Furthermore, I have also defined unique constraints, such as in the `Follower` c
 ### This should focus on the database design BEFORE coding has begun, eg. during the project planning or design phase. (12 POINTS)
 
 
-![SM_API](src/docs/SocialMedia_API.jpg)
+![SM_API](src/docs/ERD_DIN.png)
 
 
 
@@ -191,7 +191,7 @@ The post model allows the user to post from their account. The core attributes w
 
 There are 4 relationships established within this model, allowing the model to interact with each respective model:
 
-`threads` --> estiblishes a many-to-one relationship with the 'InnovationThread' model, as the posts may belong to a specific thread. Having said that, the posts do not have to have a relationship with a thread and can be posted to the main feed, depending on the end point selected.
+`threads` --> estiblishes a many-to-one relationship with the 'InnovationThread' model, as many posts may belong to one specific thread. Having said that, the posts do not have to have a relationship with a thread and can be posted to the main feed, depending on the end point selected.
 
 `user` --> establishes a many-to-one relationship with the `User` model, as each post is created by a specific user.
 
