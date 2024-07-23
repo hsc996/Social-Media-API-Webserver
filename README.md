@@ -114,10 +114,9 @@ Furthermore, I have also defined unique constraints, such as in the `Follower` c
 
 
 
-To ensure a robust and efficient Object-Relational Mapping (ORM) setup for my API, the initial and crucial step is the creation of an Entity Relationship Diagram (ERD). An ERD provides a visual representation of each 'entity' as a table, detailing its attributes; including primaary keys (PKs) and foreign keys (FKs). This diagram is instrumental in comprehansive planning and structuring of the ORM by defining unique identifiers for each table, which ensures that every record can be unniquely referenced and retrieved. Additionally, the ERD maps the relationships between entities: such as, one-to-many, many-to-one and many-to-many, allowing for a clear understanding of how data interrelates.
+To ensure a robust and efficient Object-Relational Mapping (ORM) setup for my API, the initial and crucial step is the creation of an Entity Relationship Diagram (ERD). An ERD provides a visual representation of each 'entity' as a table, detailing its attributes; including primary keys (PKs) and foreign keys (FKs). This diagram is instrumental in comprehansive planning and structuring of the ORM by defining unique identifiers for each table, which ensures that every record can be unniquely referenced and retrieved. Additionally, the ERD maps the relationships between entities: such as, one-to-many, many-to-one and many-to-many, allowing for a clear understanding of how data interrelates.
 
-
-Within my ERD design, I have colour-coded the entities and constructed a "Database Colour Legend" so the viewer is able to easily identify what each colour signifies.
+My ERD is comprised of 8 entity tables, each representing a model/table within the database. Each entity has a header, which will ultimately be similar or identical to the names of the model classes within my API. However, I'm aware that I've included entities within this ERD that I may not have time to complete; you will see these represented in yellow to indicate they are "proposed" additional features. Each entity table has two columns; the left columns contain the attributes, while the right column contains the data type/contraints, and/or key type if applicable. Within my ERD design, I have colour-coded the header of each entity and constructed a "Database Colour Legend" so the viewer is able to easily identify what each colour signifies. This database legend also includes the colour legends of the primary and foreign keys:
 
 * `Core Entity Table` --> these entity tables have been colour coded in purple. I've used this terminology in the database legend so that theoretically, other developers/viewers would be able to see which entities will be decidedly included in the API.
   
@@ -127,16 +126,21 @@ Within my ERD design, I have colour-coded the entities and constructed a "Databa
   
 * `Primary Key` --> in order to promote consistency and clarification, I've colored the primary keys and their associated data type in red: This is also outlined in the database legend. Furthermore, to elucidate these elements further, I have placed them in bold text and identified them using a `(PK)` notation. This allows the viewer to find these key elements faster.
   
-* `Foreign Key` --> 
+* `Foreign Key` --> the database legend identifies that the foreign keys can be found in blue. I decided to colour the text of the foreign key attribute, data type and constraint of each entity blue. Similarly to the primary key legend, I also decided to make these even more identifiable by underlining the text and placing a `(FK)` notation besides each of them.
+
+
+I have used traditional ERD symbols in order to represent the relationships between the entities. The double line represents 'one-and-only-one', while the cirle with the extending crows foot symbol represents 'none-or-many'. For example, the line connecting the tables `User` and `Post` entities has a double line at the "user" end and the cirle crows foot symbol at the "post" end. This is because one (and only one) user can create many (or none, if they so desire) posts. Thus, as zero or many posts can belong to a single user, these symbols accurately represent the relationship between these two models. These symbols have been intentionally excluded from the database legend as they are customary and hence widely regonisable within a software development team.
+
+At first glance, one is able to see that this ERD adheres to the First Normal Form (1NF) of data normalisation, as each entity contains a single primary key to ensure unique records and every column contains atomic values (e.g. `username`, `email`). Furthermore, it also adheres to Second Normal Form (2NF) as it eliminates transitive dependencies. This is apparent as all key attributes depend on the entire primary key; for example, the use of the `ChallengeParticipants` junction table will mean that the `challenge_id` and `user_id` together form the composite key in order to handle many-to-many relationships.
 
 
 
-This visualisation is essential for designing the database schema in order to achieve data normalisation, which minimises redundancy and avoids data duplication, thus leading to a more consistent and manageable database. Furthermore, by illustrating FK relationships, the ERD aids in enforing referential integrity, thus ensuring that relationships between table are accurately maintained.
+This visual representation of the database is essential for designing the database schema in order to achieve data normalisation, which minimises redundancy and avoids data duplication, thus leading to a more consistent and manageable database. Furthermore, by illustrating FK relationships, the ERD aids in enforing referential integrity, thus ensuring that relationships between table are accurately maintained.
 
 ```
 - Create a detailed ERD with a detailed explanation of how all the relations depicted in the ERD are normalised
 - ERD must include a legend/key of the notation and styles, matching a notation or style identified in the accompanying explanation
-- Must include comparisons to how at least ONE model/relations would in other level sof normalisation that the one shown in the ERD
+- Must include comparisons to how at least ONE model/relations would in other levels of normalisation that the one shown in the ERD
 ```
 
 
