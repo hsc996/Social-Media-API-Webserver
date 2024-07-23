@@ -5,18 +5,21 @@
 
 This API is designed as a specialised social media platform specifically for software developers; providing a centralised hub to bridge the gap between developers and cutting-edge technology innovation. The platform caters specifically to develoeprs who are interested in experimenting with and contributing to developer who are interested in experimenting with and contributing to emerging technologies: For example, AI, blockchain, quantum computing and emerging programming languages. Users can create posts detailing their experiments, showcase prototypes, and share insights on novel techniques and tools. Similarly, users are also able to engage in "Innovation Threads" that track the development of new ideas and concepts within these fields.
 
-Furthermore, this platform aims to streamline these interactions by consolidating various community-building aspects into one dedicated space. The follower/following feature offers users control over their feed, ensuring that content is tailored to their interests and visibility preferences. Additionally, the like and comment functionalities are designed to foster engagement and strengthen relationships within the developer community. In addition to traditional social media functionalities, this platform also incorporates features tailored to innovation and collaboration. This approach not only enhances commnication and collaboration but also ensures that users can easily navigate and contribute to a vibrant, interconnected network.
+Furthermore, this platform aims to streamline these interactions by consolidating various community-building aspects into one dedicated space. The follower/following feature offers users to customise their feed to include updates on technologies of their interest, influential tech leaders and groundbreaking research. Additionally, the like and comment functionalities are designed to foster engagement and strengthen relationships within the developer community. In addition to traditional social media functionalities, this platform also incorporates features tailored to innovation and collaboration. This approach not only enhances commnication and collaboration but also ensures that users can easily navigate and contribute to a vibrant, interconnected network. Users can also create their own "Innovation Threads" in which they can track the development of new ideas within the community and exchange their opinions on emerging technology. Within my ERD I've included a proposed feature called "Tech Challenges", where users can propose and solve technology-related problems. Despite my belief that this is a strong idea, it ultimately wasn't included in the final application due to time constraints.
+
+This application aims to achieve several key objectives. Firstly, it seeks to strengthen community relationships within the tech community. Secondly, it strives to facilitate developer engagement in innovation and by helping the identify gaps in emerging and evolving fields. By staying abreast of trends and offering a welcoming platform for open discussion, this platform will enable community members to meet these goals effectively.
 
 
 ```
-Users can participate in "Tech Challenges," where they can propose and solve technology-related problems, engage in "Innovation Threads" that track the development of new ideas, and collaborate on open-source projects within the platform. The follower/following system allows users to customize their feeds to include updates on technologies of their interest, influential tech leaders, and groundbreaking research.
+- propose this is used internally within a company? -- this may consolidate team relationships, promote professional development, improve product outcomes, create novel solutions in the software domain
 
-The platform also includes a "Tech Trends" feature that aggregates and highlights the latest advancements and discussions in various tech fields, keeping users at the forefront of industry developments. This unique approach not only fosters a community centered around technological innovation but also provides a dedicated space for developers to drive and participate in the future of technology.
-
-objective references and statistics to support this answer
-- mention the competitors: Linkedin, Medium, Stackoverflow, Reddit, Substack
+- research developer communities
+- trends in community engagement
+- successful developer platforms
 
 ```
+
+
 
 ### 2. Describe the way tasks are allocated and tracked in your project.
 **includes proof of thorough usage of specific task management tools through the length of the project**
@@ -50,22 +53,56 @@ I developed an implementation plan using a Kanban board in Github Projects, whic
 ### 4. Explain the benefits and drawbacks of this app’s underlying database system.
 
 
+
+PostgreSQL is an advanced, open-source relational database management system (RDBMS) which I've employed as the underlying database system within this API. It supports SQL for relational queries and JSON for non-relational queries, creating a powerful and flexible data framework for a wide range of applications. As a fully ACID-compliant database, PostgreSQL not only ensures reliable transactions and data integrity, but also boasts advanced features; such as complex query capabilities, indexing, full-text search, and support for custom data types and functions.
+
+
+**Benefits**
+
+
+_1. ACID Compliance:_ PostgreSQL is fully ACID-compliant, ensuring data integrity, as well as reliable transactions. This is crucial for applications requiring consistent and accurate data.
+
+
+_2. Advanced Features:_ PostgreSQL provides advance features like complex queries, foreign keys, triggers, views and stored procedures, in order to enable sophisticated data manipulation and the implementation of business logic directly within the database.
+
+
+_3. Extensibility:_ PostgreSQL's is a highly extensible system, offering a myriad of customisable options to the user to meet their specific application needs. Users can define their own data types, index types, and functional languages. It is also a packaging tool for database add-ons, supporting languages like PL/pgSQL, PL/Python, Java, and even JavaScript; allowing developers to write and run functions in various languages within the database by exposing an interface for language integration. This interface enables seamless execution of functions regardless of their underlying language, thus simplifying complexity by providing an extensible language function. This capability allows larger companies to develop functional packages tailored to their specific business domains.
+
+
+_4. Performance:_ PostgreSQL supports complex queries, foreign keys, triggers, views, and stored procedures, enabling sophisticated data manipulation and business logic directly within the database. Its powerful indexing and optimization techniques make it suitable for managing large datasets and high-concurrency environments efficiently. Additionally, it uses Multi-Version Concurrency Control (MVCC) to handle concurrent processing and maintain high transaction rates with minimal risk of deadlocks, as well as ensuring high availability and provides server failure recovery mechanisms.
+
+
+_5. Open Source:_ PostgreSQL being open source is highly beneficial as it is cost-effective, reducing database management expenses since it is free to use. It enjoys strong community support, with a large and active developer base ensuring rapid bug fixes, regular updates, and abundant resources. The open-source nature allows for high flexibility and customization, enabling users to modify the source code to meet specific needs. Additionally, it offers transparency for inspecting code security and reliability, fosters innovation through global collaboration, and avoids vendor lock-in, providing freedom in choosing support and services.
+
+
+
+**Drawbacks:**
+
+
+_1. Complexity:_ Due to its advanced features and extensive configuration options, PostgreSQL can be more complex to set up and maintain compared to simpler databases like SQLite.
+
+_2. Resource Intensive:_ PostgreSQL can be more resource-intensive, requiring more memory and CPU than other databases, which might be a concern for smaller applications or those running on limited hardware.
+
+_4. Learning Curve:_ The richness of features means there is a steeper learning curve for new users or developers who are not familiar with its capabilities and configuration options. It has also been noted that the initial installation may also be difficult for beginners.
+
+_5. Scaling Write Operations:_ While PostgreSQL handles read operations very efficiently, scaling write operations across multiple servers can be challenging and may require additional tools and configurations (e.g., sharding, replication).
+
+_6. Slower performance:_ As this database has a stronger focus on delivering compatibility, the speed of performance has been impacted when compared to other RDBMS like SQL Server and MySQL. It has also been noted that some SELECT queries may be slower than their counterparts. 
+
+
+
 ### 5. Explain the features, purpose and functionalities of the object-relational mapping system (ORM) used in this app.
 
-The object-relational mapping (ORM) system I have used within this API is SQLAlchemy. I opted to use SQLAlchemy as it provides high-level abstraction for interacting with relational databases. In this particular API, the database I have employed is PostgreSQL.
+
+The object-relational mapping (ORM) system I have used within this API is SQLAlchemy. I opted to use SQLAlchemy as it provides high-level abstraction for interacting with relational databases. This abstraction simplifies database oeprations, enhances code readability and reduces risk of SQL injection.
 
 
-_1) Entity Relationship Diagram_
-
-To ensure a robust ORM setup for my API, the first step is creating an Entity Relationship Diagram (ERD). The ERD presents a visual representation of each table, including their attributes, primary keys and foreign keys, as well as the relationships between the tables. This approach defines unique identifiers, enforces referential integreity and aids in promoting data normalisation to minmise data redundancy and duplication.
-
-
-_2) Mapping Classes (Models) to Tables_
+_1) Mapping Classes (Models) to Tables_
 
 Within the "models" folder is a series of files, each containing the models and schema of each main data table. Each 'entity' in the ERD are translated into SQLAlchemy models: Within my code, the `InnovationThread`, `User`, `Post`, `Comment`, `Like` and `Follower` classes are the models I've created, passing the `(db.Model)` attribute so that SQLAlchemy can recognise these classes are the objects to be mapped into the relational database as tables. Each of the attributes within the ERD are defined as columns using `db.Column` and data types and constraints are specified (e.g. `comment_body = db.Column(db.String, nullable=False)`). This is necessary in order for SQLAlchemy to understand how to accurately translate the data into the database.
 
 
-_3) Relationships and Associations_
+_2) Relationships and Associations_
 
 These models are also used to establish the relationships and associations within object relational mapping. Within these models, the relationships (which would mirror those of the ERD) have also be defined using the the 'back_populates' attribute. For example, the use of `user = db.relationship("User", back_populates="threads")` in the "InnovationThread" Model ensures that the `User` model's `threads` attribute is kept in sync, allowing bidirectional access between threads and their associated user. However, these attributes/associations look different depending on the intended nature of the entity relationship. For example, the `User` class has a one-to-many relationship with the `InnovationThread` and `Post` classes, as specified here:
 ```
@@ -80,13 +117,13 @@ followed_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
 follower = db.relationship("User", foreign_keys=[follower_id], back_populates="following_assoc")
 followed = db.relationship("User", foreign_keys=[followed_id], back_populates="followers_assoc")
 ```
-This setup, in turn, allows users to follow each other, thus facilitating a dynamic social network.
+This setup allows users to follow each other, thus facilitating a dynamic social network.
 
 
-_4) Validation & Constraints_
+_3) Validation & Constraints_
 
 
-I have also used SQLAlchemy to enforce data constraints and validations directly within my model definitions. For example, in this `InnovationThread` class, the `title` column has a constraint to ensure that it is not left empty and does not exceed 100 characters.
+SQLAlchemy enforces constraints and validations directly within my model definitions. For example, in this `InnovationThread` class, the `title` column has a constraint to ensure that it is not empty and does not exceed 100 characters.
 ```
     @validates('title')
     def validate_title(self, key, title):
@@ -105,6 +142,68 @@ Furthermore, I have also defined unique constraints, such as in the `Follower` c
     )
 ```
 
+
+
+
+
+
+
+
+
+```
+4) Schema Definitions and Serialization
+
+To facilitate data transfer, Marshmallow is used for schema definitions and serialization. Each model has a corresponding schema, ensuring data is formatted correctly when sent to clients. For example, UserSchema includes fields for posts, comments, and excludes sensitive information like passwords:
+```
+class UserSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = User
+        exclude = ("password",)
+    posts = ma.Nested(PostSchema, many=True)
+
+```
+5) CRUD Operations
+SQLAlchemy simplifies implementing CRUD operations. For instance, creating a new post involves instantiating a Post object and adding it to the session:
+```
+new_post = Post(title="New Post", content="Content here", user_id=1)
+db.session.add(new_post)
+db.session.commit()
+
+```
+6) Querying and Filtering
+SQLAlchemy provides powerful querying capabilities. For example, filtering posts by a specific user can be done using:
+```
+user_posts = Post.query.filter_by(user_id=1).all()
+
+```
+This enhances efficiency by allowing complex queries with simple syntax.
+SQLAlchemy supports transactions and rollbacks, ensuring data integrity. If an operation fails, changes can be rolled back:
+```
+try:
+    db.session.commit()
+except Exception:
+    db.session.rollback()
+    raise
+
+```
+
+7) Transactions and Rollbacks
+SQLAlchemy supports transactions and rollbacks, ensuring data integrity. If an operation fails, changes can be rolled back:
+```
+try:
+    db.session.commit()
+except Exception:
+    db.session.rollback()
+    raise
+
+```
+This prevents partial updates and maintains database consistency.
+
+
+SQLAlchemy's ORM features facilitate seamless integration between Python code and relational databases. By abstracting complex database operations, it enhances code readability, security, and maintainability, making it an essential component of this API.
+
+```
+
 ### 6. Design an entity relationship diagram (ERD) for this app’s database, and explain how the relations between the diagrammed models will aid the database design. 
 ### This should focus on the database design BEFORE coding has begun, eg. during the project planning or design phase. (12 POINTS)
 
@@ -114,7 +213,7 @@ Furthermore, I have also defined unique constraints, such as in the `Follower` c
 
 
 
-To ensure a robust and efficient Object-Relational Mapping (ORM) setup for my API, the initial and crucial step is the creation of an Entity Relationship Diagram (ERD). An ERD provides a visual representation of each 'entity' as a table, detailing its attributes; including primary keys (PKs) and foreign keys (FKs). This diagram is instrumental in comprehansive planning and structuring of the ORM by defining unique identifiers for each table, which ensures that every record can be unniquely referenced and retrieved. Additionally, the ERD maps the relationships between entities: such as, one-to-many, many-to-one and many-to-many, allowing for a clear understanding of how data interrelates.
+To ensure a robust and efficient Object-Relational Mapping (ORM) setup for my API, the initial and crucial step is the creation of an Entity Relationship Diagram (ERD). An ERD provides a visual representation of each 'entity' as a table, detailing its attributes; including primary keys (PKs) and foreign keys (FKs). This diagram is instrumental in comprehansive planning and structuring of the ORM by defining unique identifiers for each table, which ensures that every record can be unniquely referenced and retrieved. Additionally, the ERD maps the relationships between entities: such as, one-to-many, many-to-one and many-to-many, allowing for a clear understanding of how data interrelates. This visual representation of the database is essential for designing the database schema in order to achieve data normalisation, which minimises redundancy and avoids data duplication, thus leading to a more consistent and manageable database. Furthermore, by illustrating FK relationships, the ERD aids in enforing referential integrity, thus ensuring that relationships between table are accurately maintained.
 
 My ERD is comprised of 8 entity tables, each representing a model/table within the database. Each entity has a header, which will ultimately be similar or identical to the names of the model classes within my API. However, I'm aware that I've included entities within this ERD that I may not have time to complete; you will see these represented in yellow to indicate they are "proposed" additional features. Each entity table has two columns; the left columns contain the attributes, while the right column contains the data type/contraints, and/or key type if applicable. Within my ERD design, I have colour-coded the header of each entity and constructed a "Database Colour Legend" so the viewer is able to easily identify what each colour signifies. This database legend also includes the colour legends of the primary and foreign keys:
 
@@ -131,18 +230,10 @@ My ERD is comprised of 8 entity tables, each representing a model/table within t
 
 I have used traditional ERD symbols in order to represent the relationships between the entities. The double line represents 'one-and-only-one', while the cirle with the extending crows foot symbol represents 'none-or-many'. For example, the line connecting the tables `User` and `Post` entities has a double line at the "user" end and the cirle crows foot symbol at the "post" end. This is because one (and only one) user can create many (or none, if they so desire) posts. Thus, as zero or many posts can belong to a single user, these symbols accurately represent the relationship between these two models. These symbols have been intentionally excluded from the database legend as they are customary and hence widely regonisable within a software development team.
 
-At first glance, one is able to see that this ERD adheres to the First Normal Form (1NF) of data normalisation, as each entity contains a single primary key to ensure unique records and every column contains atomic values (e.g. `username`, `email`). Furthermore, it also adheres to Second Normal Form (2NF) as it eliminates transitive dependencies. This is apparent as all key attributes depend on the entire primary key; for example, the use of the `ChallengeParticipants` junction table will mean that the `challenge_id` and `user_id` together form the composite key in order to handle many-to-many relationships.
+At first glance, one is able to see that this ERD adheres to the First Normal Form (1NF) of data normalisation, as each entity contains a single primary key to ensure unique records and every column contains atomic values (e.g. `username`, `email`). Furthermore, it also adheres to Second Normal Form (2NF) as all non-key attributes depend entirely on the primary key. This is apparent as all key attributes depend on the entire primary key; for example, the use of the `ChallengeParticipants` junction table will mean that the `challenge_id` and `user_id` together form the composite key in order to handle many-to-many relationships. Similary, the elimination of transitive dependencies also means that the ERD adheres to the Third Normal Form (3NF) of data normalisation. For example, within the `Followers` table, both `follower_id` and `following_id` are part of the composite primary key, ensuring each relationship is both uniquely and directly tied to the primary key. The ERD also conforms to the Boyce-Codd Normal Form (BCNF), as each determinant is a candidate key and there and no partial dependencies or transitive dependencies not addressed. It is likely that this ERD conforms to Fourth Normal Form (4NF) and Fifth Normal Form (5NF) as there are no apprent multiple-valued dependencies or complex join dependencies. However, this is difficult to delineate without specific use cases, as specific contexts may recover additional hidden dependencies. For example, within the `Tech Challenges` participants are able to join multiple challenges, and each challenge can have multiple paritcipants. Suppose each pariticpant in a challenge has aspecific roels or resources that depend on both the challenge and particiipant, forming a 3 way relationship. This would require the introduction of another joint table (e.g. `ChallengeRolesResources`)
+to handle these dependencies and avoid data redundancy.
 
-
-
-This visual representation of the database is essential for designing the database schema in order to achieve data normalisation, which minimises redundancy and avoids data duplication, thus leading to a more consistent and manageable database. Furthermore, by illustrating FK relationships, the ERD aids in enforing referential integrity, thus ensuring that relationships between table are accurately maintained.
-
-```
-- Create a detailed ERD with a detailed explanation of how all the relations depicted in the ERD are normalised
-- ERD must include a legend/key of the notation and styles, matching a notation or style identified in the accompanying explanation
-- Must include comparisons to how at least ONE model/relations would in other levels of normalisation that the one shown in the ERD
-```
-
+Consider the `User` table: if one of the optional attributes was "skills" with the data type "array", allowing developers to list their programming skills, this would impact which level of data normalisation the ERD adheres to. In this scenario, we are introducing a multi-value dependency within a single entity, which leaves the database vulnerable to data duplication or redundancy. In this context, it would not pass the 4NF level and would thus reduce the highest achieved normalisation level to 3NF overall.
 
 
 
@@ -337,3 +428,10 @@ After seeding the database, the column displayed should involve `id` (like_id, P
 
 ### REFERENCES
 
+
+
+https://www.geeksforgeeks.org/normal-forms-in-dbms/
+
+PostgreSQL vs. SQL Server: What’s the difference? (no date) Google Cloud. Available at: https://cloud.google.com/learn/postgresql-vs-sql#section-8.
+
+Mastering Relational Database Structure (2024) myscale.com. Available at: https://myscale.com/blog/essential-components-relational-database-structure/#the-logical-structure-tables-keys-and-relationships

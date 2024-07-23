@@ -18,7 +18,6 @@ class User(db.Model):
     website_url = db.Column(db.String)
     linkedin_url = db.Column(db.String)
     github_url = db.Column(db.String)
-    skills = db.Column(db.ARRAY(db.String))
     job_title = db.Column(db.String)
     is_admin = db.Column(db.Boolean, default=False)
 

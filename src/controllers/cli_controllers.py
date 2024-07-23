@@ -39,7 +39,6 @@ def seed_tables():
             website_url="http://admin.com",
             linkedin_url="http://linkedin.com/admin",
             github_url="http://github.com/admin",
-            skills=["Python", "Java", "C++"],
             job_title="Admin"
         ),
         User(
@@ -53,7 +52,6 @@ def seed_tables():
             website_url="http://user1.com",
             linkedin_url="http://linkedin.com/user1",
             github_url="http://github.com/user1",
-            skills=["Javascript", "React", "Node.js"],
             job_title="Software Developer"
         ),
         User(
@@ -67,7 +65,6 @@ def seed_tables():
             website_url="http://user2.com",
             linkedin_url="http://linkedin.com/in/user2",
             github_url="http://github.com/user2",
-            skills=["Java", "Spring", "Docker"],
             job_title="Backend Engineer"
         ),
         User(
@@ -81,7 +78,6 @@ def seed_tables():
             website_url="http://user3.com",
             linkedin_url="http://linkedin.com/in/user3",
             github_url="http://github.com/user3",
-            skills=["Machine Learning", "Data Science", "Python"],
             job_title="Data Scientist"
         )
     ]
