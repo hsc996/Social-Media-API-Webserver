@@ -109,18 +109,33 @@ Furthermore, I have also defined unique constraints, such as in the `Follower` c
 ### This should focus on the database design BEFORE coding has begun, eg. during the project planning or design phase. (12 POINTS)
 
 
-![SM_API](src/docs/ERD_DIN.png)
 
+![SM_API](src/docs/ERD_DIN.png)
 
 
 
 To ensure a robust and efficient Object-Relational Mapping (ORM) setup for my API, the initial and crucial step is the creation of an Entity Relationship Diagram (ERD). An ERD provides a visual representation of each 'entity' as a table, detailing its attributes; including primaary keys (PKs) and foreign keys (FKs). This diagram is instrumental in comprehansive planning and structuring of the ORM by defining unique identifiers for each table, which ensures that every record can be unniquely referenced and retrieved. Additionally, the ERD maps the relationships between entities: such as, one-to-many, many-to-one and many-to-many, allowing for a clear understanding of how data interrelates.
 
+
+Within my ERD design, I have colour-coded the entities and constructed a "Database Colour Legend" so the viewer is able to easily identify what each colour signifies.
+
+* `Core Entity Table` --> these entity tables have been colour coded in purple. I've used this terminology in the database legend so that theoretically, other developers/viewers would be able to see which entities will be decidedly included in the API.
+  
+* `Association Table` --> the entity tables in green signify the association or junction tables within the database. By highlighting these in a different colour to the "core" entity tables, other developers will be able to delineate that way in which they form a bridge between two core entity tables in order to facilitate many-to-many relationships. Although the `Followers` table does not provide as a junction between two core entities, it still fosters a many-to-many relationship between `User` and `Followers` tables, thus can still be considered an association table.
+  
+* `Proposed Tables` --> the entity tables that have been colour-coded yellow signify "proposed" tables. In theory, these tables represent proposed features to add to the API; which would be a very useful feature, particularly when collaborating within a development team. In the context of my API, they represent proposed additional features that I would like to incorporate if I feel as though I can complete them within the allotted time.
+  
+* `Primary Key` --> in order to promote consistency and clarification, I've colored the primary keys and their associated data type in red: This is also outlined in the database legend. Furthermore, to elucidate these elements further, I have placed them in bold text and identified them using a `(PK)` notation. This allows the viewer to find these key elements faster.
+  
+* `Foreign Key` --> 
+
+
+
 This visualisation is essential for designing the database schema in order to achieve data normalisation, which minimises redundancy and avoids data duplication, thus leading to a more consistent and manageable database. Furthermore, by illustrating FK relationships, the ERD aids in enforing referential integrity, thus ensuring that relationships between table are accurately maintained.
 
 ```
 - Create a detailed ERD with a detailed explanation of how all the relations depicted in the ERD are normalised
-- ERD must include a legend/key of the notation and styles matching a notation or style identified in the accompanying explanation
+- ERD must include a legend/key of the notation and styles, matching a notation or style identified in the accompanying explanation
 - Must include comparisons to how at least ONE model/relations would in other level sof normalisation that the one shown in the ERD
 ```
 
