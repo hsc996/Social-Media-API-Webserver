@@ -1,4 +1,5 @@
 from src.init import db, ma
+from sqlalchemy import func
 from marshmallow import fields, validates, ValidationError
 from marshmallow.validate import Length
 
@@ -9,7 +10,7 @@ class Comment(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     comment_body = db.Column(db.String, nullable=False)
-    timestamp = db.Column(db.Date)
+    timestamp = db.Column(db.DateTime, default=func.now())
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey("posts.id"), nullable=False)

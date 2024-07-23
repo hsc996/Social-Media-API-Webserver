@@ -106,7 +106,6 @@ def delete_comment(post_id, comment_id):
         if not post:
             return {"error": f"Post with ID {post_id} not found."}, 404
         
-        user_id = get_jwt_identity()
         stmt = db.select(Comment).filter_by(id=comment_id)
         comment = db.session.scalar(stmt)
 

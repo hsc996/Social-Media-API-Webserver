@@ -106,7 +106,7 @@ Furthermore, I have also defined unique constraints, such as in the `Follower` c
 ```
 
 ### 6. Design an entity relationship diagram (ERD) for this app’s database, and explain how the relations between the diagrammed models will aid the database design. 
-### This should focus on the database design BEFORE coding has begun, eg. during the project planning or design phase.
+### This should focus on the database design BEFORE coding has begun, eg. during the project planning or design phase. (12 POINTS)
 
 
 ![SM_API](src/docs/SocialMedia_API.jpg)
@@ -117,6 +117,12 @@ Furthermore, I have also defined unique constraints, such as in the `Follower` c
 To ensure a robust and efficient Object-Relational Mapping (ORM) setup for my API, the initial and crucial step is the creation of an Entity Relationship Diagram (ERD). An ERD provides a visual representation of each 'entity' as a table, detailing its attributes; including primaary keys (PKs) and foreign keys (FKs). This diagram is instrumental in comprehansive planning and structuring of the ORM by defining unique identifiers for each table, which ensures that every record can be unniquely referenced and retrieved. Additionally, the ERD maps the relationships between entities: such as, one-to-many, many-to-one and many-to-many, allowing for a clear understanding of how data interrelates.
 
 This visualisation is essential for designing the database schema in order to achieve data normalisation, which minimises redundancy and avoids data duplication, thus leading to a more consistent and manageable database. Furthermore, by illustrating FK relationships, the ERD aids in enforing referential integrity, thus ensuring that relationships between table are accurately maintained.
+
+```
+- Create a detailed ERD with a detailed explanation of how all the relations depicted in the ERD are normalised
+- ERD must include a legend/key of the notation and styles matching a notation or style identified in the accompanying explanation
+- Must include comparisons to how at least ONE model/relations would in other level sof normalisation that the one shown in the ERD
+```
 
 
 
@@ -133,6 +139,7 @@ This model allows the user to create a thread to facilitate innovative ideas and
 I've created four separate CRUD operations specifically for posts on threads, included in the `post_controller.py` file; the queries of which reference these relationships within the InnovationThread model in order to retrieve information from the User and Post objects. For example, in order to retrieve all posts on a specific thread (`get_all_posts_in_thread`), it begins a query to select records from the `Post` table using `db.select(Post)`, then uses `.filter_by(thread_id=thread_id)` to filter the posts to only include those with a `thread_id` that match the thread_id specified in the route. In order for this to work, the relationship to the `Post` object must exist within the `InnovationThread` model and vice versa (`threads = db.relationship("InnovationThread", back_populates="posts")` within the `Post` model). The thread_id must also be included in the Post model as a foerign key.
 
 Therefore, when I seed the Postgres database, I should be able to see `id` (thread, PK), `title`, `content`, `timestamp` and `user_id` as the columns within the "thread" table:
+
 
 ![innovation_thread](/src/docs/innovation%20thread_model.png)
 
@@ -180,7 +187,7 @@ All of these attributes allow for a comprehensive user profile, particularly for
 **3) Post Model**
 
 
-The post model allows the user to post from their account. The core attributes within this model involve the `id` (post_id) as the primary key, the `body` of the post (`nullable=False`) and a timestamp of when the post was created (defaults to the current time). There are 2 foreign keys identified within this model: the `user_id`, allowing identification of the user creating the post, and the `threads_id`, in the event that the  posts is posted on an existing thread.
+The post model allows the user to post from their account. The core attributes within this model involve the `id` (post_id) as the primary key, the `body` of the post (`nullable=False`) and a timestamp of when the post was created (defaults to the current time). There are 2 foreign keys identified within this model: the `user_id`, allowing identification of the user creating the post, and the `threads_id`, in the event that the  posts is posted on an existing thread. Within the `post_controllers.py` file, you will see double the amount of CRUD operations; this is necessary as different end points are required in order to allow the user to post on their main feed vs. on an existing post.
 
 There are 4 relationships established within this model, allowing the model to interact with each respective model:
 
@@ -196,10 +203,46 @@ The posts model allows the user to post to their main feed and within organised 
 
 ![post_model](/src/docs/post_model.png)
 
-Let's review an example of why these relationships are necessary. When examining the relationship between the `Post` and `Like` objects, we can look at the queries used within the controllers to identify the relationship. Within the `get_post_likes` method, `db.select(Post).filter_by(id=post_id)` is used to first query the `Post` table for the post with the given post_id, with `db.session.scalar(stmt)` executing the select statement and returning a single result (the post) if it exists. Furthermore, `Like.query.filter_by(post_id=post.id).all()` uses SQLAlchemy to query the `Like` table and filters by post_id to reitreve all the likes associated with the post. In this way, the relationship established with the `Like` model is crucial as the "like" function entirely depends on whether or not a post exists.
+Let's review an example of why these relationships are necessary. When examining the relationship between the `Post` and `Like` objects, we can look at the queries used within the controllers to identify the relationship:
+```
+def get_post_likes(post_id):
+    stmt = db.select(Post).filter_by(id=post_id)
+    post = db.session.scalar(stmt)
+
+    if post is None:
+        return {"error": f"Post with ID {post_id} not found."}, 404
+        
+    likes = Like.query.filter_by(post_id=post.id).all()
+    return likes_schema.dump(likes), 200
+```
+ Within the `get_post_likes` method, `db.select(Post).filter_by(id=post_id)` is used to first query the `Post` table for the post with the given post_id, with `db.session.scalar(stmt)` executing the select statement and returning a single result (the post) if it exists. Furthermore, `Like.query.filter_by(post_id=post.id).all()` uses SQLAlchemy to query the `Like` table and filters by post_id to reitreve all the likes associated with the post. In this way, the relationship established with the `Like` model is crucial as the "like" function entirely depends on whether or not a post exists.
 
 
 **4) Comment Model**
+
+
+The comment model is designed to allow the user to comment on posts; they can either post on posts on their main feed or posts within exitsting threads. The `id` within the model has been defined as the primary key (`primary_key=True`), which means that this attribute can be used to uniquely identify each comment. Furthermore, the comment will require a body of content (`comment_body`), which is why I've made this attribute not nullable. Lastly, I've included a timestamp, which uses a SQLAlchemy `func` import to set the default timestamp to the current time. There are 2 necessary foreign keys defined within this model: the `user_id` and the `post_id`. For this reason, relationships have been established between this model and both the `User` and `Post` models:
+```
+user = db.relationship("User", back_populates="comments")
+posts = db.relationship("Post", back_populates="comments")
+```
+
+`user` --> esablishes a many-to-one relationship, as each comment is associated with a single user (the account from which the comment is posted). Within the "POST" operation in the comment controllers, `user_id=get_jwt_identity()` is used to retireve the current user' ID from the JWT in order to identify and track the creator of the comment within the database.
+
+`post` --> estbalishes a many-to-one relationship, as each comment is associated with one post (the post on which the user is commenting). Let's examine an example from the "POST" method in the comment controllers:
+```
+        body_data = request.get_json()
+        stmt = db.select(Post).filter_by(id=post_id)
+        post = db.session.scalar(stmt)
+```
+Within this code example, `db.select(Post)` initialises a query to select records from the `Post` table, while `.filter_by(id=post_id)` adds a filter condition to query to match the post with the `post_id` specified in the route. `db.session.scalar(stmt)` is then used to execute the query. This is necessary as the first step before executing the rest of the code, as the operation must find a post on which to comment before allowing the user to execute a comment. By examining this query, we're able to understand the relationship between the `Comment` and `Post` objects and why it's necessary that they're established within the models.
+
+After seeding the database, I will be able to see the columns as: `id` (comment_id, PK), `comment_body_`, `timestamp`, `user_id` (FK) and `post_id` (FK), as shown below:
+
+
+![comment_model](/src/docs/comment_model.png)
+
+
 
 
 
@@ -210,8 +253,23 @@ Let's review an example of why these relationships are necessary. When examining
 - includes information about the queries that would be used to access data using the models' relationships
 ```
 
+
+
+**5) Like Model**
+
+
+
+
 ### 8. Explain how to use this application’s API endpoints. Each endpoint should be explained, including the following data for each endpoint:
 ### * HTTP verb
 ### * Path or route
 ### * Any required body or header data
 ### * Response
+
+
+
+
+
+
+### REFERENCES
+
