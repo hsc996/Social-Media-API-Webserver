@@ -246,16 +246,61 @@ After seeding the database, I will be able to see the columns as: `id` (comment_
 
 
 
-
-```
-- describes models in terms of the relationships they have with each other
-- includes appropriate code examples/supporting descriptions
-- includes information about the queries that would be used to access data using the models' relationships
-```
-
-
-
 **5) Like Model**
+
+
+The `Like` model represents the action of a user liking a post. This model includes an `id` (like_id) as the primary key (`primary_key=True`), which uniquely identifies each like record within the database. The `user_id` and `post_id` fields are foreign keys that link to the `User` and `Post` models, respectively.
+
+`user` --> establishes a many-to-one relationship with the `User` model, as each like is associated with a single user but one user is able like multiiple posts. `db.relationship("User", back_populates="likes")` ensured that the `User` models's `likes` relationship is kept synchronised. Let's review an example of how this relationship is referenced in a query:
+```
+@likes_bp.route("/", methods=["GET"])
+def get_post_likes(post_id):
+    stmt = db.select(Post).filter_by(id=post_id)
+    post = db.session.scalar(stmt)
+
+    if post is None:
+        return {"error": f"Post with ID {post_id} not found."}, 404
+        
+    likes = Like.query.filter_by(post_id=post.id).all()
+    return likes_schema.dump(likes), 200
+```
+Within this snippet of code, `db.select(Post).filter_by(id=post_id)` creates a query to find the `Post` with the specified `post_id`, while `db.session.scalar(stmt)` executes the query to get the `Post` object. Furthermore, `Like.query.filter_by(post_id=post.id).all()` finds all records associated witht he retrieved `Post` object using the post_id. This query demonstrates a many-to-one relationship between "likes" and "posts".
+
+
+`posts` --> establishes a many-to-one relationship with the `Post` model, as each like is associated with a single post. `db.relationship("Post", back_populates="likes")` ensures that the `Post` model's `likes` relationship is kept synchronised. Let's review an example of where this relationship is demonstrated:
+```
+# Like a post - POST - /post/<int:post_id>/likes
+@likes_bp.route("/", methods=["POST"])
+@jwt_required()
+def like_post(post_id):
+    try:
+        user_id = get_jwt_identity()
+        stmt = db.select(Post).filter_by(id=post_id)
+        post = db.session.scalar(stmt)
+
+        if not post:
+            return {"error": f"Post with ID {post_id} not found."}, 404
+        
+        if str(post.user_id) == str(user_id):
+            return {"error": f"You cannot like your own post."}, 403
+        
+        existing_like = Like.query.filter_by(user_id=user_id, post_id=post.id).first()
+        if existing_like:
+            return {"error": f"Post with ID {post_id} already liked."}, 400
+        
+        new_like = Like(
+            user_id=user_id,
+            post_id=post.id
+        )
+        db.session.add(new_like)
+        db.session.commit()
+        return like_schema.dump(new_like), 201
+```
+Within this snippet of code, the JWT is stored as a variable `user_id` and refernced later in the code: `Like.query.filter_by(user_id=user_id, post_id=post.id).first()` is a query used to check whether the current user has already liked the specified post. In order for this to be executed, it must utilise the relationship established between `Like` and `User/Post`.
+
+After seeding the database, the column displayed should involve `id` (like_id, PK), `user_id` (FK) and `post_id` (FK):
+
+![like_model](/src/docs/like_model.png)
 
 
 
