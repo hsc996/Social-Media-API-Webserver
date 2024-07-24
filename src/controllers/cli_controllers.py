@@ -2,13 +2,13 @@ from datetime import date, datetime
 
 from flask import Blueprint
 
-from src.init import db, bcrypt
-from src.models.user import User
-from src.models.post import Post
-from src.models.comment import Comment
-from src.models.like import Like
-from src.models.follower import Follower
-from src.models.thread import InnovationThread
+from init import db, bcrypt
+from models.user import User
+from models.post import Post
+from models.comment import Comment
+from models.like import Like
+from models.follower import Follower
+from models.thread import InnovationThread
 
 db_commands = Blueprint("db", __name__)
 

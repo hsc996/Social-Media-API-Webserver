@@ -1,11 +1,12 @@
 from datetime import datetime
 
-from src.init import db
+from init import db
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from src.models.thread import InnovationThread, thread_schema, threads_schema
-from src.models.post import Post
+from models.thread import InnovationThread, thread_schema, threads_schema
+from models.post import Post
 from marshmallow import ValidationError
+from utils import auth_thread_action
 
 
 thread_bp = Blueprint("threads", __name__, url_prefix="/threads")
@@ -55,7 +56,7 @@ def create_thread():
         db.session.add(new_thread)
         db.session.commit()
 
-        return {"message": "Thread created successfully", "thread_id": new_thread.id}, 201
+        return thread_schema.dump(new_thread), 201
     
     except ValidationError as e:
         return {"error": str(e)}, 400
@@ -69,6 +70,7 @@ def create_thread():
 # Edit a thread - PUT, PATCH - /thread/<int:thread_id>
 @thread_bp.route("/<int:thread_id>", methods=["PUT", "PATCH"])
 @jwt_required()
+@auth_thread_action
 def edit_thread(thread_id):
     try:
         body_data = thread_schema.load(request.get_json(), partial=True)
@@ -99,6 +101,7 @@ def edit_thread(thread_id):
 # Delete a thread - DELETE - /thread/<int:thread_id>
 @thread_bp.route("/<int:thread_id>", methods=["DELETE"])
 @jwt_required()
+@auth_thread_action
 def delete_thread(thread_id):
     try:
         thread = InnovationThread.query.get(thread_id)

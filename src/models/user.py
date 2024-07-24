@@ -1,6 +1,6 @@
-from src.init import db, ma
+from init import db, ma
 from marshmallow import fields, validate
-from src.models.follower import Follower
+from models.follower import Follower
 from marshmallow.validate import Regexp, Length
 
 

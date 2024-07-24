@@ -1,4 +1,4 @@
-from src.init import db, ma
+from init import db, ma
 from sqlalchemy import func
 from marshmallow import fields, validates, ValidationError
 from marshmallow.validate import Length

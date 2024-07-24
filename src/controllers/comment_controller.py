@@ -4,10 +4,10 @@ from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow.exceptions import ValidationError
 
-from src.init import db
-from src.models.comment import Comment, comment_schema, comments_schema
-from src.models.post import Post
-from src.utils import auth_user_action
+from init import db
+from models.comment import Comment, comment_schema, comments_schema
+from models.post import Post
+from utils import auth_user_action
 
 
 comments_bp = Blueprint("comments", __name__, url_prefix="/posts/<int:post_id>/comments")

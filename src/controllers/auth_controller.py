@@ -5,8 +5,8 @@ from sqlalchemy.exc import IntegrityError
 from psycopg2 import errorcodes
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
-from src.init import bcrypt, db
-from src.models.user import User, user_schema, UserSchema
+from init import bcrypt, db
+from models.user import User, user_schema, UserSchema
 
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")

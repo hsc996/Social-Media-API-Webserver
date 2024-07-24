@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.init import db, ma
+from init import db, ma
 from marshmallow import fields, validate
 from sqlalchemy import func
 from sqlalchemy.orm import validates
@@ -35,7 +35,6 @@ class InnovationThread(db.Model):
 
 class InnovationThreadSchema(ma.SQLAlchemyAutoSchema):
 
-    user = fields.Nested ("UserSchema", only=["username", "email"])
     posts = fields.Nested("PostSchema", only=["body", "timestamp", "comments", "likes"], many=True)
     title = fields.String(
         required=True,
@@ -50,7 +49,7 @@ class InnovationThreadSchema(ma.SQLAlchemyAutoSchema):
     timestamp = fields.DateTime(format="%Y-%m-%d %H:%M:%S", missing=datetime.now)
 
     class Meta:
-        fields = ["id", "title", "content", "timestamp", "user_id", "posts", "user"]
+        fields = ["id", "title", "content", "timestamp", "user_id", "posts"]
 
 
 
