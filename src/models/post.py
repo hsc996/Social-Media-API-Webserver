@@ -25,9 +25,9 @@ class Post(db.Model):
 class PostSchema(ma.SQLAlchemyAutoSchema):
 
     user = fields.Nested("UserSchema", only=["id", "username"])
-    comments = fields.List(fields.Nested("CommentSchema", exclude=["posts"]))
-    likes = fields.List(fields.Nested("LikeSchema"), only=["id"])
-    thread = fields.List(fields.Nested('InnovationThreadSchema', only=["id", "title"]))
+    comments = fields.List(fields.Nested("CommentSchema", only=["id", "comment_body", "user"]))
+    likes = fields.List(fields.Nested("LikeSchema"), exclude=["post_id"])
+    thread = fields.Nested('InnovationThreadSchema', only=["id", "title"])
 
     body = fields.String(required=True,
                          validate=Length(min=1, error="Body cannot be empty.")

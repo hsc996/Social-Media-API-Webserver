@@ -42,7 +42,6 @@ def create_thread():
     try:
         body_data = thread_schema.load(request.get_json())
 
-
         if not body_data or not isinstance(body_data.get("title"), str) or not body_data.get("title").strip():
             return {"error": "Invalid request title"}, 400
         

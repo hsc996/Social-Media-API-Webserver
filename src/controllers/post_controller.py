@@ -56,7 +56,7 @@ def create_post():
         db.session.add(new_post)
         db.session.commit()
 
-        return {"message": "Post created successfully", "post_id": new_post.id}, 201
+        return post_schema.dump(new_post), 201
     
     except ValidationError as e:
         return {"error": str(e)}, 400
@@ -64,6 +64,40 @@ def create_post():
     except Exception as e:
         db.session.rollback()
         return {"error": "Internal Server Error"}, 500
+
+
+
+# Edit a post - PUT, PATCH - /posts/<int:post_id>
+@posts_bp.route("/<int:post_id>", methods=["PUT", "PATCH"])
+@jwt_required()
+@auth_user_action(Post, "post_id")
+def update_post(post_id):
+    try:
+        body_data = post_schema.load(request.get_json(), partial=True)
+        stmt = db.select(Post).filter_by(id=post_id)
+        post = db.session.scalar(stmt)
+
+        if not post:
+            return {"error": f"Post with ID {post_id} not found."}, 404
+        
+        if not body_data or not isinstance(body_data["body"], str) or not body_data.get("body").strip():
+            return {"error": "Invalid request body"}, 400
+
+        post.body = body_data.get("body", post.body)
+        if body_data.get("timestamp"):
+            post.timestamp = datetime.strptime(body_data["timestamp"], "%Y-%m-%d").date()
+
+        db.session.commit()
+        
+        return post_schema.dump(post), 200
+    
+    except ValidationError as e:
+        return {"error": e.messages}, 400
+    
+    except Exception as e:
+        db.session.rollback()
+        return {"error": "Internal Server Error"}, 500
+    
 
 
 
@@ -89,36 +123,6 @@ def delete_post(post_id):
     except Exception as e:
         db.session.rollback()
         print(e)
-        return {"error": "Internal Server Error"}, 500
-    
-
-
-# Edit a post - PUT, PATCH - /posts/<int:post_id>
-@posts_bp.route("/<int:post_id>", methods=["PUT", "PATCH"])
-@jwt_required()
-@auth_user_action(Post, "post_id")
-def update_post(post_id):
-    try:
-        body_data = post_schema.load(request.get_json(), partial=True)
-        stmt = db.select(Post).filter_by(id=post_id)
-        post = db.session.scalar(stmt)
-
-        if not post:
-            return {"error": f"Post with ID {post_id} not found."}, 404
-
-        post.body = body_data.get("body", post.body)
-        if body_data.get("timestamp"):
-            post.timestamp = datetime.strptime(body_data["timestamp"], "%Y-%m-%d").date()
-
-        db.session.commit()
-        
-        return post_schema.dump(post), 200
-    
-    except ValidationError as e:
-        return {"error": e.messages}, 400
-    
-    except Exception as e:
-        db.session.rollback()
         return {"error": "Internal Server Error"}, 500
     
 
