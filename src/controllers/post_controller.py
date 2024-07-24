@@ -25,6 +25,8 @@ posts_bp.register_blueprint(comments_bp)
 def get_all_posts():
     stmt = db.select(Post).order_by(Post.timestamp.desc())
     posts = db.session.scalars(stmt)
+    if posts is None:
+        return {"error": "No posts found."}, 404
     return posts_schema.dump(posts), 200
 
 
@@ -192,7 +194,7 @@ def post_to_thread(thread_id):
             db.session.add(new_post)
             db.session.commit()
 
-            return {"message": "Post created successfully", "post_id": new_post.id}, 201
+            return post_schema.dump(new_post), 201
         
         except ValidationError as e:
             return {"error": str(e)}, 400
