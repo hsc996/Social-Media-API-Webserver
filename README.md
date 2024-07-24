@@ -24,6 +24,9 @@ This application aims to achieve several key objectives. Firstly, it seeks to st
 ### 2. Describe the way tasks are allocated and tracked in your project.
 **includes proof of thorough usage of specific task management tools through the length of the project**
 
+
+
+
 Github project board: https://github.com/users/hsc996/projects/4
 
 
@@ -47,11 +50,12 @@ I developed an implementation plan using a Kanban board in Github Projects, whic
 
 
 
+
+
 ### 3. List and explain the third-party services, packages and dependencies used in this app.
 
 
 ### 4. Explain the benefits and drawbacks of this app’s underlying database system.
-
 
 
 PostgreSQL is an advanced, open-source relational database management system (RDBMS) which I've employed as the underlying database system within this API. It supports SQL for relational queries and JSON for non-relational queries, creating a powerful and flexible data framework for a wide range of applications. As a fully ACID-compliant database, PostgreSQL not only ensures reliable transactions and data integrity, but also boasts advanced features; such as complex query capabilities, indexing, full-text search, and support for custom data types and functions.
@@ -88,6 +92,7 @@ _4. Learning Curve:_ The richness of features means there is a steeper learning 
 _5. Scaling Write Operations:_ While PostgreSQL handles read operations very efficiently, scaling write operations across multiple servers can be challenging and may require additional tools and configurations (e.g., sharding, replication).
 
 _6. Slower performance:_ As this database has a stronger focus on delivering compatibility, the speed of performance has been impacted when compared to other RDBMS like SQL Server and MySQL. It has also been noted that some SELECT queries may be slower than their counterparts. 
+
 
 
 
@@ -420,6 +425,76 @@ After seeding the database, the column displayed should involve `id` (like_id, P
 ### * Path or route
 ### * Any required body or header data
 ### * Response
+
+
+#### THREAD CONTROLLER
+
+
+**FETCH ALL THREADS**
+
+_HTTP verb:_ GET
+_PATH/ROUTE:_ http://127.0.0.1:8080/threads
+_BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
+_SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a list of threads within the database on JSON format, ordered by the thread `id` in descending order. It should return each of the thread attributes: `id`, `title`, `content`, `timestamp`. Furthermore, it should display the `user_id` of the creator, as well as the associated posts within the thread.
+![get_all_threads](/src/docs/threads_getall.png)
+
+
+**FETCH A SINGLE THREAD**
+
+_HTTP verb:_ GET
+_PATH/ROUTE:_ http://127.0.0.1:8080/threads/2 (/threads/<int:thread_id>)
+_BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
+_SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON dictionary containing the `id`, `title`, `content`, `timestamp`, `user_id` of the creator, as well as posts associated with the thread.
+![get_single_post](/src/docs/threads_getsingle.png)
+
+
+**CREATE A THREAD**
+
+_HTTP verb:_ POST
+_PATH/ROUTE:_ http://127.0.0.1:8080/threads
+_BODY/HEADER REQUIRED:_ The only required body data required in the payload is the `title` and `content` fields in JSON format. This is an exmaple of what the payload should look like:
+```
+{
+	"title":"New Thread",
+	"content": "Content of new thread"
+}
+```
+It will also require a JWT token to authenticate the user before allowing it to execute. If the token is missing, it will return this error:
+![missing_auth_header](/src/docs/missing_auth_header.png)
+_SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON dictionary containing the `id`, `title`, `content`, `timestamp`, `user_id` of the creator, as well as posts associated with the thread:
+![succ_thread_post](src/docs/succ_thread_post.png)
+
+
+**EDIT/UPDATE AN EXISTING THREAD**
+
+_HTTP verb:_ PUT, PATCH
+_PATH/ROUTE:_ http://127.0.0.1:8080/threads/3 (/threads/<int:thread_id>)
+_BODY/HEADER REQUIRED:_ Like the POST method, the payload will require body data addressing the `title` and `content` fields in JSON format. Here is an example:
+```
+{
+	"title": "Updating thread",
+	"content": "Content edited"
+}
+```
+It will also require a JWT token to authenticate the user before allowing it to execute. This endpoint also requires further user authorisation, meaning editing of the thread will only be executed if the JWT token belongs to the original creator of the thread or administator of the platform. If no JWT is provided, this error will be returned:
+![missing_auth_header](/src/docs/missing_auth_header.png)
+And if a JWT is provided but does not belong to the thread creator or admin, it will return this error:
+![unauthorised](/src/docs/unauthorised.png)
+_SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON dictionary containing the `id`, `title`, `content`, `timestamp`, `user_id` of the creator, as well as posts associated with the thread, with the updated fields displaying the new information:
+![succ_thread_patch](/src/docs/succ_thread_patch.png)
+
+
+**DELETE A THREAD**
+
+_HTTP verb:_ DELETE
+_PATH/ROUTE:_ http://127.0.0.1:8080/threads/3 (/threads/<int:thread_id>)
+_BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. However, this endpoint requires authentication with a JWT token. Just like the update method, the user must also be authorised to delete a thread: therefore, the JWT token must belong to the creator or administator of the platform. If no JWT is provided, this error will be returned:
+![missing_auth_header](/src/docs/missing_auth_header.png)
+And if a JWT is provided but does not belong to the thread creator or admin, it will return this error:
+![unauthorised](/src/docs/unauthorised.png)
+_SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should simply return a message indicating that the action was successful:
+![thread_deleted](/src/docs/thread_deleted.png)
+
 
 
 
