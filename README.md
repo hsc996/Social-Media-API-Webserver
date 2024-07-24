@@ -436,6 +436,7 @@ _HTTP verb:_ GET
 _PATH/ROUTE:_ http://127.0.0.1:8080/threads
 _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
 _SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a list of threads within the database on JSON format, ordered by the thread `id` in descending order. It should return each of the thread attributes: `id`, `title`, `content`, `timestamp`. Furthermore, it should display the `user_id` of the creator, as well as the associated posts within the thread.
+
 ![get_all_threads](/src/docs/threads_getall.png)
 
 
@@ -445,6 +446,7 @@ _HTTP verb:_ GET
 _PATH/ROUTE:_ http://127.0.0.1:8080/threads/2 (/threads/<int:thread_id>)
 _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
 _SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON dictionary containing the `id`, `title`, `content`, `timestamp`, `user_id` of the creator, as well as posts associated with the thread.
+
 ![get_single_post](/src/docs/threads_getsingle.png)
 
 
@@ -460,8 +462,11 @@ _BODY/HEADER REQUIRED:_ The only required body data required in the payload is t
 }
 ```
 It will also require a JWT token to authenticate the user before allowing it to execute. If the token is missing, it will return this error:
+
 ![missing_auth_header](/src/docs/missing_auth_header.png)
+
 _SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON dictionary containing the `id`, `title`, `content`, `timestamp`, `user_id` of the creator, as well as posts associated with the thread:
+
 ![succ_thread_post](src/docs/succ_thread_post.png)
 
 
@@ -477,10 +482,15 @@ _BODY/HEADER REQUIRED:_ Like the POST method, the payload will require body data
 }
 ```
 It will also require a JWT token to authenticate the user before allowing it to execute. This endpoint also requires further user authorisation, meaning editing of the thread will only be executed if the JWT token belongs to the original creator of the thread or administator of the platform. If no JWT is provided, this error will be returned:
+
 ![missing_auth_header](/src/docs/missing_auth_header.png)
+
 And if a JWT is provided but does not belong to the thread creator or admin, it will return this error:
+
 ![unauthorised](/src/docs/unauthorised.png)
+
 _SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON dictionary containing the `id`, `title`, `content`, `timestamp`, `user_id` of the creator, as well as posts associated with the thread, with the updated fields displaying the new information:
+
 ![succ_thread_patch](/src/docs/succ_thread_patch.png)
 
 
@@ -489,10 +499,15 @@ _SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON
 _HTTP verb:_ DELETE
 _PATH/ROUTE:_ http://127.0.0.1:8080/threads/3 (/threads/<int:thread_id>)
 _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. However, this endpoint requires authentication with a JWT token. Just like the update method, the user must also be authorised to delete a thread: therefore, the JWT token must belong to the creator or administator of the platform. If no JWT is provided, this error will be returned:
+
 ![missing_auth_header](/src/docs/missing_auth_header.png)
+
 And if a JWT is provided but does not belong to the thread creator or admin, it will return this error:
+
 ![unauthorised](/src/docs/unauthorised.png)
+
 _SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should simply return a message indicating that the action was successful:
+
 ![thread_deleted](/src/docs/thread_deleted.png)
 
 
