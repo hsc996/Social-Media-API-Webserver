@@ -1,7 +1,7 @@
 # T2A2_API_Webserver
 
 
-### 1. Explain the problem that this app will solve, and explain how this app solves or addresses the problem.
+## 1. Explain the problem that this app will solve, and explain how this app solves or addresses the problem.
 
 This API is designed as a specialised social media platform specifically for software developers; providing a centralised hub to bridge the gap between developers and cutting-edge technology innovation. The platform caters specifically to develoeprs who are interested in experimenting with and contributing to developer who are interested in experimenting with and contributing to emerging technologies: For example, AI, blockchain, quantum computing and emerging programming languages. Users can create posts detailing their experiments, showcase prototypes, and share insights on novel techniques and tools. Similarly, users are also able to engage in "Innovation Threads" that track the development of new ideas and concepts within these fields.
 
@@ -21,7 +21,7 @@ This application aims to achieve several key objectives. Firstly, it seeks to st
 
 
 
-### 2. Describe the way tasks are allocated and tracked in your project.
+## 2. Describe the way tasks are allocated and tracked in your project.
 **includes proof of thorough usage of specific task management tools through the length of the project**
 
 
@@ -30,12 +30,12 @@ This application aims to achieve several key objectives. Firstly, it seeks to st
 Github project board: https://github.com/users/hsc996/projects/4
 
 
-#### _Github Kanban_
+### _Github Kanban_
 
 ![github_kanban](/src/docs/github_kanban.png)
 
 
-#### _Github Roadmap_
+### _Github Roadmap_
 
 
 ![github_roadmap1](/src/docs/github_roadmap1.png)
@@ -52,10 +52,10 @@ I developed an implementation plan using a Kanban board in Github Projects, whic
 
 
 
-### 3. List and explain the third-party services, packages and dependencies used in this app.
+## 3. List and explain the third-party services, packages and dependencies used in this app.
 
 
-### 4. Explain the benefits and drawbacks of this app’s underlying database system.
+## 4. Explain the benefits and drawbacks of this app’s underlying database system.
 
 
 PostgreSQL is an advanced, open-source relational database management system (RDBMS) which I've employed as the underlying database system within this API. It supports SQL for relational queries and JSON for non-relational queries, creating a powerful and flexible data framework for a wide range of applications. As a fully ACID-compliant database, PostgreSQL not only ensures reliable transactions and data integrity, but also boasts advanced features; such as complex query capabilities, indexing, full-text search, and support for custom data types and functions.
@@ -96,7 +96,7 @@ _6. Slower performance:_ As this database has a stronger focus on delivering com
 
 
 
-### 5. Explain the features, purpose and functionalities of the object-relational mapping system (ORM) used in this app.
+## 5. Explain the features, purpose and functionalities of the object-relational mapping system (ORM) used in this app.
 
 
 The object-relational mapping (ORM) system I have used within this API is SQLAlchemy. I opted to use SQLAlchemy as it provides high-level abstraction for interacting with relational databases. This abstraction simplifies database oeprations, enhances code readability and reduces risk of SQL injection.
@@ -209,7 +209,7 @@ SQLAlchemy's ORM features facilitate seamless integration between Python code an
 
 ```
 
-### 6. Design an entity relationship diagram (ERD) for this app’s database, and explain how the relations between the diagrammed models will aid the database design. 
+## 6. Design an entity relationship diagram (ERD) for this app’s database, and explain how the relations between the diagrammed models will aid the database design. 
 ### This should focus on the database design BEFORE coding has begun, eg. during the project planning or design phase. (12 POINTS)
 
 
@@ -242,7 +242,7 @@ Consider the `User` table: if one of the optional attributes was "skills" with t
 
 
 
-### 7. Explain the implemented models and their relationships, including how the relationships aid the database implementation.
+## 7. Explain the implemented models and their relationships, including how the relationships aid the database implementation.
 ### This should focus on the database implementation AFTER coding has begun, eg. during the project development phase.
 
 
@@ -420,7 +420,7 @@ After seeding the database, the column displayed should involve `id` (like_id, P
 
 
 
-### 8. Explain how to use this application’s API endpoints. Each endpoint should be explained, including the following data for each endpoint:
+## 8. Explain how to use this application’s API endpoints. Each endpoint should be explained, including the following data for each endpoint:
 ### * HTTP verb
 ### * Path or route
 ### * Any required body or header data
@@ -428,7 +428,7 @@ After seeding the database, the column displayed should involve `id` (like_id, P
 
 
 
-#### POST CONTROLLERS
+### POST CONTROLLERS
 
 
 **FETCH ALL POSTS**
@@ -586,7 +586,7 @@ And if a JWT is provided but does not belong to the post creator or admin, it wi
 
 
 
-#### THREAD CONTROLLERS
+### THREAD CONTROLLERS
 
 
 **FETCH ALL THREADS**
@@ -685,7 +685,7 @@ And if a JWT is provided but does not belong to the thread creator or admin, it 
 
 
 
-### REFERENCES
+## REFERENCES
 
 
 https://www.geeksforgeeks.org/normal-forms-in-dbms/
