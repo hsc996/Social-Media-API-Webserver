@@ -426,35 +426,40 @@ After seeding the database, the column displayed should involve `id` (like_id, P
 ### * Any required body or header data
 ### * Response
 
-#### POST CONTROLLER
+
+
+#### POST CONTROLLERS
 
 
 **FETCH ALL POSTS**
 
-_HTTP verb:_ GET
-_PATH/ROUTE:_ http://127.0.0.1:8080/posts
-_BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
-_SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a list of posts within the database on JSON format, ordered by the post `id` in descending order. It should return each of the thread attributes: `id`, `body`, `timestamp`. Furthermore, it should display the `user_id` and `username` of the creator, as well as all associated comments and likes. A successful post retrieval would look like this:
+* _HTTP verb:_ GET
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
+* _SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a list of posts within the database on JSON format, ordered by the post `id` in descending order. It should return each of the thread attributes: `id`, `body`, `timestamp`. Furthermore, it should display the `user_id` and `username` of the creator, as well as all associated comments and likes. A successful post retrieval would look like this:
 
 ![get_all_posts](/src/docs/get_all_posts.png)
 
 
+
+
 **FETCH A SINGLE POST**
 
-_HTTP verb:_ GET
-_PATH/ROUTE:_ http://127.0.0.1:8080/posts/3 (/posts/<int:posts_id>)
-_BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
-_SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON dictionary containing the `id`, `body`, `timestamp`, `user_id` and `username` of the creator, as well as all associated comments and likes for this post:
+* _HTTP verb:_ GET
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/3 (/posts/<int:posts_id>)
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
+* _SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON dictionary containing the `id`, `body`, `timestamp`, `user_id` and `username` of the creator, as well as all associated comments and likes for this post:
 
 ![get_single_post](/src/docs/get_single_post.png)
 
 
 
+
 **CREATE A POST**
 
-_HTTP verb:_ POST
-_PATH/ROUTE:_ http://127.0.0.1:8080/posts
-_BODY/HEADER REQUIRED:_ The only required body data required in the payload is the `body` field in JSON format. This is an exmaple of what the payload should look like:
+* _HTTP verb:_ POST
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts
+* _BODY/HEADER REQUIRED:_ The only required body data required in the payload is the `body` field in JSON format. This is an exmaple of what the payload should look like:
 ```
 {
 	"body": "This is a new post!"
@@ -464,21 +469,22 @@ It will also require a JWT token to authenticate the user before allowing it to 
 
 ![missing_auth_header](/src/docs/missing_auth_header.png)
 
-_SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON dictionary containing the `id`, `body`, `timestamp`, `user_id` and `username` of the creator, as well as all associated comments and likes for this post:
+* _SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON dictionary containing the `id`, `body`, `timestamp`, `user_id` and `username` of the creator, as well as all associated comments and likes for this post:
 
 ![post_a_post](/src/docs/post_a_post.png)
 
-_UNSUCCESSFUL RESPONSE EXAMPLE:_ Should the body be left empty or include only whitespace, the system will return this error message:
+* _UNSUCCESSFUL RESPONSE EXAMPLE:_ Should the body be left empty or include only whitespace, the system will return this error message:
 
 ![post_bad_request](/src/docs/post_bad_request.png) or ![400_cannotbeempty](/src/docs/400_cannot_be_empty.png)
 
 
 
+
 **EDIT/UPDATE AN EXISTING POST**
 
-_HTTP verb:_ PUT, PATCH
-_PATH/ROUTE:_ http://127.0.0.1:8080/posts/3 (/posts/<int:post_id>)
-_BODY/HEADER REQUIRED:_ Like the POST method, the payload will require body data addressing the `body` field in JSON format. Here is an example:
+* _HTTP verb:_ PUT, PATCH
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/3 (/posts/<int:post_id>)
+* _BODY/HEADER REQUIRED:_ Like the POST method, the payload will require body data addressing the `body` field in JSON format. Here is an example:
 ```
 {
 		"body": "This comment had been updated"
@@ -492,21 +498,22 @@ And if a JWT is provided but does not belong to the post creator or admin, it wi
 
 ![unauthorised](/src/docs/unauthorised.png)
 
-_SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON dictionary containing the `id`, `body`, `timestamp`, `user_id` and `username` of the creator, as well as comments/likes associated with the post, with the updated fields displaying the new information:
+* _SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON dictionary containing the `id`, `body`, `timestamp`, `user_id` and `username` of the creator, as well as comments/likes associated with the post, with the updated fields displaying the new information:
 
 ![succ_patch_post](/src/docs/succ_patch_post.png)
 
-_UNSUCCESSFUL RESPONSE EXAMPLE:_ Should the body be left empty or include only whitespace, the system will return this error message:
+* _UNSUCCESSFUL RESPONSE EXAMPLE:_ Should the body be left empty or include only whitespace, the system will return this error message:
 
 ![post_bad_request](/src/docs/post_bad_request.png) or ![400_cannotbeempty](/src/docs/400_cannot_be_empty.png)
 
 
 
+
 **DELETE A POST**
 
-_HTTP verb:_ DELETE
-_PATH/ROUTE:_ http://127.0.0.1:8080/posts/ (/posts/<int:post_id>)
-_BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. However, this endpoint requires authentication with a JWT token. Just like the update method, the user must also be authorised to delete a post: therefore, the JWT token must belong to the creator or administator of the platform. If no JWT is provided, this error will be returned:
+* _HTTP verb:_ DELETE
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/ (/posts/<int:post_id>)
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. However, this endpoint requires authentication with a JWT token. Just like the update method, the user must also be authorised to delete a post: therefore, the JWT token must belong to the creator or administator of the platform. If no JWT is provided, this error will be returned:
 
 ![missing_auth_header](/src/docs/missing_auth_header.png)
 
@@ -514,42 +521,58 @@ And if a JWT is provided but does not belong to the post creator or admin, it wi
 
 ![unauthorised](/src/docs/unauthorised.png)
 
-_SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should simply return a message indicating that the action was successful:
+* _SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should simply return a message indicating that the action was successful:
 
 ![succ_deleted](/src/docs/succ_deleted_msg.png)
 
 
+#### POST CONTROLLERS THAT ALLOW USERS TO POST WITHIN EXISTING INNOVATION THREADS
+
+
+**FETCH ALL POSTS ON A SPECIFIC THREAD**
+
+* _HTTP verb:_ GET
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/threads/1 (/posts/threads/<int:thread_id>)
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
+* _SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a list of posts within the database on JSON format, ordered by the post `id` in descending order. It should return each of the thread attributes: `id`, `body`, `timestamp`. Furthermore, it should display the `user_id` and `username` of the creator, as well as all associated comments and likes. A successful post retrieval would look like this:
+
+![get_all_posts](/src/docs/get_all_posts.png)
 
 
 
-#### THREAD CONTROLLER
+
+#### THREAD CONTROLLERS
 
 
 **FETCH ALL THREADS**
 
-_HTTP verb:_ GET
-_PATH/ROUTE:_ http://127.0.0.1:8080/threads
-_BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
-_SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a list of threads within the database on JSON format, ordered by the thread `id` in descending order. It should return each of the thread attributes: `id`, `title`, `content`, `timestamp`. Furthermore, it should display the `user_id` of the creator, as well as the associated posts within the thread.
+* _HTTP verb:_ GET
+* _PATH/ROUTE:_ http://127.0.0.1:8080/threads
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
+* _SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a list of threads within the database on JSON format, ordered by the thread `id` in descending order. It should return each of the thread attributes: `id`, `title`, `content`, `timestamp`. Furthermore, it should display the `user_id` of the creator, as well as the associated posts within the thread.
 
 ![get_all_threads](/src/docs/threads_getall.png)
 
 
+
+
 **FETCH A SINGLE THREAD**
 
-_HTTP verb:_ GET
-_PATH/ROUTE:_ http://127.0.0.1:8080/threads/2 (/threads/<int:thread_id>)
-_BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
-_SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON dictionary containing the `id`, `title`, `content`, `timestamp`, `user_id` of the creator, as well as posts associated with the thread.
+* _HTTP verb:_ GET
+* _PATH/ROUTE:_ http://127.0.0.1:8080/threads/2 (/threads/<int:thread_id>)
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
+* _SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON dictionary containing the `id`, `title`, `content`, `timestamp`, `user_id` of the creator, as well as posts associated with the thread.
 
 ![get_single_post](/src/docs/threads_getsingle.png)
 
 
+
+
 **CREATE A THREAD**
 
-_HTTP verb:_ POST
-_PATH/ROUTE:_ http://127.0.0.1:8080/threads
-_BODY/HEADER REQUIRED:_ The only required body data required in the payload is the `title` and `content` fields in JSON format. This is an exmaple of what the payload should look like:
+* _HTTP verb:_ POST
+* _PATH/ROUTE:_ http://127.0.0.1:8080/threads
+* _BODY/HEADER REQUIRED:_ The only required body data required in the payload is the `title` and `content` fields in JSON format. This is an exmaple of what the payload should look like:
 ```
 {
 	"title":"New Thread",
@@ -560,21 +583,22 @@ It will also require a JWT token to authenticate the user before allowing it to 
 
 ![missing_auth_header](/src/docs/missing_auth_header.png)
 
-_SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON dictionary containing the `id`, `title`, `content`, `timestamp`, `user_id` of the creator, as well as posts associated with the thread:
+* _SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON dictionary containing the `id`, `title`, `content`, `timestamp`, `user_id` of the creator, as well as posts associated with the thread:
 
 ![succ_thread_post](src/docs/succ_thread_post.png)
 
-_UNSUCCESSFUL RESPONSE EXAMPLE:_ Should the body be left empty or include only whitespace, the system will return this error message:
+* _UNSUCCESSFUL RESPONSE EXAMPLE:_ Should the body be left empty or include only whitespace, the system will return this error message:
 
 ![post_bad_request](/src/docs/post_bad_request.png)
 
 
 
+
 **EDIT/UPDATE AN EXISTING THREAD**
 
-_HTTP verb:_ PUT, PATCH
-_PATH/ROUTE:_ http://127.0.0.1:8080/threads/3 (/threads/<int:thread_id>)
-_BODY/HEADER REQUIRED:_ Like the POST method, the payload will require body data addressing the `title` and `content` fields in JSON format. Here is an example:
+* _HTTP verb:_ PUT, PATCH
+* _PATH/ROUTE:_ http://127.0.0.1:8080/threads/3 (/threads/<int:thread_id>)
+* _BODY/HEADER REQUIRED:_ Like the POST method, the payload will require body data addressing the `title` and `content` fields in JSON format. Here is an example:
 ```
 {
 	"title": "Updating thread",
@@ -589,16 +613,18 @@ And if a JWT is provided but does not belong to the thread creator or admin, it 
 
 ![unauthorised](/src/docs/unauthorised.png)
 
-_SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON dictionary containing the `id`, `title`, `content`, `timestamp`, `user_id` of the creator, as well as posts associated with the thread, with the updated fields displaying the new information:
+* _SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should return a single JSON dictionary containing the `id`, `title`, `content`, `timestamp`, `user_id` of the creator, as well as posts associated with the thread, with the updated fields displaying the new information:
 
 ![succ_thread_patch](/src/docs/succ_thread_patch.png)
 
 
+
+
 **DELETE A THREAD**
 
-_HTTP verb:_ DELETE
-_PATH/ROUTE:_ http://127.0.0.1:8080/threads/3 (/threads/<int:thread_id>)
-_BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. However, this endpoint requires authentication with a JWT token. Just like the update method, the user must also be authorised to delete a thread: therefore, the JWT token must belong to the creator or administator of the platform. If no JWT is provided, this error will be returned:
+* _HTTP verb:_ DELETE
+* _PATH/ROUTE:_ http://127.0.0.1:8080/threads/3 (/threads/<int:thread_id>)
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. However, this endpoint requires authentication with a JWT token. Just like the update method, the user must also be authorised to delete a thread: therefore, the JWT token must belong to the creator or administator of the platform. If no JWT is provided, this error will be returned:
 
 ![missing_auth_header](/src/docs/missing_auth_header.png)
 
@@ -606,9 +632,11 @@ And if a JWT is provided but does not belong to the thread creator or admin, it 
 
 ![unauthorised](/src/docs/unauthorised.png)
 
-_SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should simply return a message indicating that the action was successful:
+* _SUCCESSFUL RESPONSE EXAMPLE:_ A successful response should simply return a message indicating that the action was successful:
 
-![thread_deleted](/src/docs/thread_deleted.png)
+![succ_deleted](/src/docs/succ_deleted_msg.png)
+
+
 
 
 
