@@ -35,6 +35,7 @@ class InnovationThread(db.Model):
 
 class InnovationThreadSchema(ma.SQLAlchemyAutoSchema):
 
+    user = fields.Nested("UserSchema", only=["id", "username"])
     posts = fields.Nested("PostSchema", only=["body", "timestamp", "comments", "likes"], many=True)
     title = fields.String(
         required=True,
@@ -49,7 +50,7 @@ class InnovationThreadSchema(ma.SQLAlchemyAutoSchema):
     timestamp = fields.DateTime(format="%Y-%m-%d %H:%M:%S", missing=datetime.now)
 
     class Meta:
-        fields = ["id", "title", "content", "timestamp", "user_id", "posts"]
+        fields = ["id", "title", "content", "timestamp", "user", "posts"]
 
 
 

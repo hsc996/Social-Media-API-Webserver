@@ -18,7 +18,7 @@ class Post(db.Model):
     threads = db.relationship("InnovationThread", back_populates="posts")
     user = db.relationship("User", back_populates="posts")
     comments = db.relationship("Comment", back_populates="posts", cascade="all, delete-orphan")
-    likes = db.relationship("Like", back_populates="posts")
+    likes = db.relationship("Like", back_populates="posts", cascade="all, delete-orphan")
 
 
 

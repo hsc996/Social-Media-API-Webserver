@@ -3,6 +3,8 @@ from flask_jwt_extended import get_jwt_identity
 from init import db
 from models.user import User
 from models.thread import InnovationThread
+from flask import jsonify
+
 
 def auth_user_action(model, id_arg_name):
     def decorator(func):
@@ -10,9 +12,6 @@ def auth_user_action(model, id_arg_name):
         def wrapper(*args, **kwargs):
             user_id = get_jwt_identity()
             instance_id = kwargs.get(id_arg_name)
-
-            if instance_id is None:
-                instance_id = args[0] if args else None
 
             if instance_id is None:
                 return {"error": "Instance ID not provided."}, 400
@@ -26,7 +25,7 @@ def auth_user_action(model, id_arg_name):
                 return {"error": f"{model.__name__} with ID {instance_id} not found."}, 404
             
             is_admin = user.is_admin
-            is_owner = str(instance.user_id) == str(user_id)
+            is_owner = str(instance.id) == str(user_id)
 
             if not is_admin and not is_owner:
                 return {"error": "Unauthorized to perform this action."}, 403

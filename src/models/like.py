@@ -19,7 +19,7 @@ class LikeSchema(ma.Schema):
     posts = fields.Nested("PostSchema", only=["id"])
 
     class Meta:
-        fields = ["id", "user_id", "post_id"]
+        fields = ["id", "user", "posts"]
 
 like_schema = LikeSchema()
 likes_schema = LikeSchema(many=True)

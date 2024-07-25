@@ -8,7 +8,7 @@ class User(db.Model):
     __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String, nullable=False)
+    username = db.Column(db.String, nullable=False, unique=True)
     email = db.Column(db.String, nullable=False, unique=True)
     password = db.Column(db.String, nullable=False)
     profile_picture_url = db.Column(db.String)
@@ -21,10 +21,10 @@ class User(db.Model):
     job_title = db.Column(db.String)
     is_admin = db.Column(db.Boolean, default=False)
 
-    threads = db.relationship("InnovationThread", back_populates="user")
-    posts = db.relationship("Post", back_populates="user")
-    comments = db.relationship("Comment", back_populates="user")
-    likes = db.relationship("Like", back_populates="user")
+    threads = db.relationship("InnovationThread", back_populates="user", cascade="all, delete-orphan")
+    posts = db.relationship("Post", back_populates="user", cascade="all, delete-orphan")
+    comments = db.relationship("Comment", back_populates="user", cascade="all, delete-orphan")
+    likes = db.relationship("Like", back_populates="user", cascade="all, delete-orphan")
 
     followers_assoc = db.relationship(
         "Follower",
