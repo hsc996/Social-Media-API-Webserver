@@ -126,3 +126,27 @@ def auth_thread_action(func):
         return func(*args, **kwargs)
 
     return wrapper
+
+def auth_unfollow_action(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        current_user_id = get_jwt_identity()
+        user_id = kwargs.get('user_id')
+
+        if user_id is None:
+            return {"error": "User ID not provided."}, 400
+
+        if int(current_user_id) == int(user_id):
+            return {"error": "You cannot follow or unfollow yourself."}, 400
+
+        user = db.session.query(User).filter_by(id=user_id).first()
+        if not user:
+            return {"error": f"User with ID {user_id} not found."}, 404
+
+        existing_follow = Follower.query.filter_by(follower_id=current_user_id, followed_id=user_id).first()
+        if existing_follow is None:
+            return {"error": "You are already not following this user."}, 400
+
+        return func(*args, **kwargs)
+    
+    return wrapper

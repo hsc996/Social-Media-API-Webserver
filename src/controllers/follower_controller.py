@@ -5,6 +5,7 @@ from marshmallow.exceptions import ValidationError
 from init import db
 from models.follower import Follower, follower_schema, followers_schema
 from models.user import User
+from utils import auth_unfollow_action
 
 
 follower_bp = Blueprint("follower", __name__, url_prefix="/users")
@@ -92,6 +93,7 @@ def follow():
 # Unfollow a user - DELETE - /users/<int:user_id>/unfollow
 @follower_bp.route("/<int:user_id>/unfollow", methods=["DELETE"])
 @jwt_required()
+@auth_unfollow_action
 def unfollow_user(user_id):
     current_user_id = get_jwt_identity()
     try:

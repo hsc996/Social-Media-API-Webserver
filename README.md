@@ -49,10 +49,44 @@ I developed an implementation plan using a Kanban board in Github Projects, whic
 
 
 
-
-
-
 ## 3. List and explain the third-party services, packages and dependencies used in this app.
+
+**1. Flask**
+
+Flask is a light-weight WSGI applicaiton framework for Python which facilitates routing, request handling and response management for web applications. I've utilised the Flask framework to:
+
+    * Initiilise the main setup file
+    * Define routes (endpoints) for handling HTTP requests
+    * Manage request and response handling
+    * Configure application settings
+    * Use Blueprints for modilarizing the application
+    * Enable debugging and handle errors effectively
+
+In addtion, I have incorporated several Flask extensions and modules to handle specific elements of the API, enhancing the functionality and flexibility of the application.
+
+
+
+**2. Flask-SQLAlchemy**
+
+Flask-SQLAlchemy (F-S) is an extension for Flask that inegrates SQLAlchemy, a crucial Object-Relational Mapping (ORM) tool for Python. Within my application, F-S is used to facilitate the interaction between my Flask web application and the PostgreSQL database. Here is how it's used:
+
+    * Database Integration --> this package is user to simplify the connection the the PostgreSQL database by providing a configuration interface within my app. For example:
+    ```
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+    ```
+    This example utilises the `os` module to retrieve the database URI from environment variables, which is then passed to F-S to handle the configuration and establish the connection with the database
+
+    * ORM Mapping --> Within this application SQLAlchemy is imported from F-S in order to define the models/objects. It is used here to translate each model class to a corresponding table within the database. The attributes of each class represent columns within the table.
+
+
+
+
+
+
+
+
+
+
 
 
 ## 4. Explain the benefits and drawbacks of this app’s underlying database system.
