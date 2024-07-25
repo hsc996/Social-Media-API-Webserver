@@ -5,7 +5,7 @@ from marshmallow.exceptions import ValidationError
 from init import db
 from models.like import Like, like_schema, likes_schema
 from models.post import Post
-from utils import auth_user_action
+from utils import auth_like_action
 
 
 likes_bp = Blueprint("likes", __name__, url_prefix="/posts/<int:post_id>/likes")
@@ -64,7 +64,7 @@ def like_post(post_id):
 # Unlike a post - DELETE - /post/<int:post_id>/likes/<int:like_id>
 @likes_bp.route("/<int:like_id>", methods=["DELETE"])
 @jwt_required()
-@auth_user_action(Like, "like_id")
+@auth_like_action
 def unlike_post(post_id, like_id):
     try:
         user_id = get_jwt_identity()

@@ -10,7 +10,7 @@ from models.user import User
 follower_bp = Blueprint("follower", __name__, url_prefix="/users")
 
 
-# Get followers of a user - GET - /users/<int:user_id>/followers
+# Fetch followers of a user - GET - /users/<int:user_id>/followers
 @follower_bp.route("/<int:user_id>/followers", methods=["GET"])
 def get_followers(user_id):
     stmt = db.select(User).filter_by(id=user_id)
@@ -24,7 +24,7 @@ def get_followers(user_id):
 
 
 
-# Get users a specific user is following - GET - /users/<int:user_id>/following
+# Fetch users a specific user is following - GET - /users/<int:user_id>/following
 @follower_bp.route("/<int:user_id>/following", methods=["GET"])
 def get_following(user_id):
     user_stmt = db.select(User).filter_by(id=user_id)
@@ -106,7 +106,7 @@ def unfollow_user(user_id):
 
         existing_follow = Follower.query.filter_by(follower_id=current_user_id, followed_id=user_id).first()
         if existing_follow is None:
-            return {"error": "You are already not following this user."}, 404
+            return {"error": "You are already not following this user."}, 400
         
         db.session.delete(existing_follow)
         db.session.commit()

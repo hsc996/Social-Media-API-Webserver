@@ -4,8 +4,8 @@ from sqlalchemy.orm.exc import NoResultFound
 from init import db
 from models.user import User
 from models.comment import Comment
+from models.like import Like
 from models.thread import InnovationThread
-from flask import jsonify
 
 
 def auth_user_action(model, id_arg_name):
@@ -67,6 +67,36 @@ def auth_comment_action(func):
         return func(*args, **kwargs)
     
     return wrapper
+
+
+def auth_like_action(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        user_id = get_jwt_identity()
+        like_id = kwargs.get('like_id')
+
+        if like_id is None:
+            return {"error": "Like ID not provided."}, 400
+
+        user = db.session.query(User).filter_by(id=user_id).first()
+        if not user:
+            return {"error": "User not found"}, 404
+
+        try:
+            like = db.session.query(Like).filter_by(id=like_id).one()
+        except NoResultFound:
+            return {"error": f"Like with ID {like_id} not found."}, 404
+
+        is_admin = user.is_admin
+        is_owner = str(like.user_id) == str(user_id)
+
+        if not is_admin and not is_owner:
+            return {"error": "Unauthorized to perform this action."}, 403
+
+        return func(*args, **kwargs)
+    
+    return wrapper
+
 
 
 def auth_thread_action(func):

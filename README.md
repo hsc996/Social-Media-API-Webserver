@@ -427,107 +427,6 @@ After seeding the database, the column displayed should involve `id` (like_id, P
 ## * Response
 
 
-### COMMENT ENDPOINTS
-
-**FETCH ALL COMMENTS ON A POST**
-
-* _HTTP verb:_ GET
-* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/1/comments (/posts/<int:post_id>/comments)
-* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
-* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response should return a JSON dictionary of all of the comments associated with the post identified by post_id in the endpoint. It will also return the `body`, `timestamp` and `thread_id` (if applicable) associated with the comment. Here is an example:
-
-![get_all_comments](/src/docs/get_all_comments.png)
-
-* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching post_id is found, the system will return a 404 error like this:
-
-![post_not_found](/src/docs/post_not_found.png)
-
-If the post exists but there are no comments associated with that post, the system will return a message like this:
-
-![no_comments_found](/src/docs/no_comments_found.png)
-
-
-
-**FETCH ONE SPECIFIC COMMENT**
-
-* _HTTP verb:_ GET
-* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/1/comments/1 (/posts/<int:post_id>/comments/<int:comment_id>)
-* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
-* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response should return a JSON dictionary of all of the comments associated with the post identified by post_id in the endpoint. It will also return the `body`, `timestamp` and `thread_id` (if applicable) associated with the comment. Here is an example:
-
-![get_one_comment](/src/docs/get_one_comment.png)
-
-* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching post_id is found, the system will return a 404 error like this:
-
-![post_not_found](/src/docs/post_not_found.png)
-
-If the post exists but the `comment_id` provided does not match the `post_id` provided, the system will return a message like this:
-
-![no_comment_on_post](/src/docs/commentdoesnotbelongtopost.png)
-
-
-
-**POST A COMMENT**
-
-* _HTTP verb:_ POST
-* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/1/comments (/posts/<int:post_id>/comments)
-* _BODY/HEADER REQUIRED:_ The body data will require a `comment_body` to be passed in order to successfully execute this endpoint. Furthermore, a JWT token is required, as the system needs to be able to recognise the account from which the comment is posted.
-* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response should return a JSON dictionary including the `id` (comment_id), `comment_body`, `timestamp`. It also will return the "username" from the `user` field and the `body`, `timestamp` and `thread_id` (if applicable) of the associated post. Here is an example:
-
-![succ_commentcreated](/src/docs/succ_commentcreated.png)
-
-* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching post_id is found, the system will return a 404 error like this:
-
-![post_not_found](/src/docs/post_not_found.png)
-
-If the `comment_body` is empty or isn't between 1-200 characters, a bad reuqest error will be returned:
-
-![comment_400](/src/docs/comment_400.png)
-
-
-
-**EDIT A COMMENT**
-
-* _HTTP verb:_ PUT, PATCH
-* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/1/comments/1 (/posts/<int:post_id>/comments/<int:comment_id>)
-* _BODY/HEADER REQUIRED:_ The body data will require a `comment_body` to be passed in order to successfully execute this endpoint. Furthermore, a JWT token is required, as the system needs to be able to recognise the account from which the comment is posted. Further authorisation has been added to this endpoint, requiring the JWT provided to belong to either the owner of the comment or an administrator in order for it to be successfully executed.
-* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response should return a JSON dictionary including the `id` (comment_id), `comment_body`, `timestamp`. It also will return the "username" from the `user` field and the `body`, `timestamp` and `thread_id` (if applicable) of the associated post. Here is an example:
-
-![comment_edited](/src/docs/comment_edited.png)
-
-* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching post_id is found, the system will return a 404 error like this:
-
-![post_not_found](/src/docs/post_not_found.png)
-
-If the `comment_body` is empty or isn't between 1-200 characters, a bad reuqest error will be returned:
-
-![comment_400](/src/docs/comment_400.png)
-
-If the JWT token provided does not match the owner of the account or is not an admin account, this error message will be returned:
-
-![unauthorised](/src/docs/unauthorised.png)
-
-
-
-**DELETE A COMMENT**
-
-* _HTTP verb:_ DELETE
-* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/1/comments/1 (/posts/<int:post_id>/comments/<int:comment_id>)
-* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. However, a JWT token is required, as the system needs to be able to recognise the account from which the comment is posted. Further authorisation has been added to this endpoint, requiring the JWT provided to belong to either the owner of the comment or an administrator in order for it to be successfully executed. 
-* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response for this endpoint should return a message indicating to the user that this action has been performed:
-
-![comment_deleted](/src/docs/comment_deleted.png)
-
-* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching post_id is found, the system will return a 404 error like this:
-
-![post_not_found](/src/docs/post_not_found.png)
-
-If the JWT token provided does not match the owner of the account or is not an admin account, this error message will be returned:
-
-![unauthorised](/src/docs/unauthorised.png)
-
-
-
 
 
 ### USER ENDPOINTS
@@ -824,6 +723,169 @@ And if a JWT is provided but does not belong to the post creator or admin, it wi
 
 
 
+### COMMENT ENDPOINTS
+
+
+**FETCH ALL COMMENTS ON A POST**
+
+* _HTTP verb:_ GET
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/1/comments (/posts/<int:post_id>/comments)
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
+* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response should return a list of JSON dictionaries of all of the comments associated with the post identified by post_id in the endpoint. It will also return the `body`, `timestamp` and `thread_id` (if applicable) associated with the comment. Here is an example:
+
+![get_all_comments](/src/docs/get_all_comments.png)
+
+* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching post_id is found, the system will return a 404 error like this:
+
+![post_not_found](/src/docs/post_not_found.png)
+
+If the post exists but there are no comments associated with that post, the system will return a message like this:
+
+![no_comments_found](/src/docs/no_comments_found.png)
+
+
+
+**FETCH ONE SPECIFIC COMMENT**
+
+* _HTTP verb:_ GET
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/1/comments/1 (/posts/<int:post_id>/comments/<int:comment_id>)
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
+* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response should return a JSON dictionary of all of the comments associated with the post identified by post_id in the endpoint. It will also return the `body`, `timestamp` and `thread_id` (if applicable) associated with the comment. Here is an example:
+
+![get_one_comment](/src/docs/get_one_comment.png)
+
+* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching post_id is found, the system will return a 404 error like this:
+
+![post_not_found](/src/docs/post_not_found.png)
+
+If the post exists but the `comment_id` provided does not match the `post_id` provided, the system will return a message like this:
+
+![no_comment_on_post](/src/docs/commentdoesnotbelongtopost.png)
+
+
+
+**POST A COMMENT**
+
+* _HTTP verb:_ POST
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/1/comments (/posts/<int:post_id>/comments)
+* _BODY/HEADER REQUIRED:_ The body data will require a `comment_body` to be passed in order to successfully execute this endpoint. Furthermore, a JWT token is required, as the system needs to be able to recognise the account from which the comment is posted.
+* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response should return a JSON dictionary including the `id` (comment_id), `comment_body`, `timestamp`. It also will return the "username" from the `user` field and the `body`, `timestamp` and `thread_id` (if applicable) of the associated post. Here is an example:
+
+![succ_commentcreated](/src/docs/succ_commentcreated.png)
+
+* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching post_id is found, the system will return a 404 error like this:
+
+![post_not_found](/src/docs/post_not_found.png)
+
+If the `comment_body` is empty or isn't between 1-200 characters, a bad reuqest error will be returned:
+
+![comment_400](/src/docs/comment_400.png)
+
+
+
+**EDIT A COMMENT**
+
+* _HTTP verb:_ PUT, PATCH
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/1/comments/1 (/posts/<int:post_id>/comments/<int:comment_id>)
+* _BODY/HEADER REQUIRED:_ The body data will require a `comment_body` to be passed in order to successfully execute this endpoint. Furthermore, a JWT token is required, as the system needs to be able to recognise the account from which the comment is posted. Further authorisation has been added to this endpoint, requiring the JWT provided to belong to either the owner of the comment or an administrator in order for it to be successfully executed.
+* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response should return a JSON dictionary including the `id` (comment_id), `comment_body`, `timestamp`. It also will return the "username" from the `user` field and the `body`, `timestamp` and `thread_id` (if applicable) of the associated post. Here is an example:
+
+![comment_edited](/src/docs/comment_edited.png)
+
+* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching post_id is found, the system will return a 404 error like this:
+
+![post_not_found](/src/docs/post_not_found.png)
+
+If the `comment_body` is empty or isn't between 1-200 characters, a bad reuqest error will be returned:
+
+![comment_400](/src/docs/comment_400.png)
+
+If the JWT token provided does not match the owner of the account or is not an admin account, this error message will be returned:
+
+![unauthorised](/src/docs/unauthorised.png)
+
+
+
+**DELETE A COMMENT**
+
+* _HTTP verb:_ DELETE
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/1/comments/1 (/posts/<int:post_id>/comments/<int:comment_id>)
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. However, a JWT token is required, as the system needs to be able to recognise the account from which the comment is posted. Further authorisation has been added to this endpoint, requiring the JWT provided to belong to either the owner of the comment or an administrator in order for it to be successfully executed. 
+* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response for this endpoint should return a message indicating to the user that this action has been performed:
+
+![comment_deleted](/src/docs/comment_deleted.png)
+
+* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching post_id is found, the system will return a 404 error like this:
+
+![post_not_found](/src/docs/post_not_found.png)
+
+If the JWT token provided does not match the owner of the account or is not an admin account, this error message will be returned:
+
+![unauthorised](/src/docs/unauthorised.png)
+
+
+
+
+### LIKE ENDPOINTS
+
+**FETCH ALL LIKES ON A POST**
+
+* _HTTP verb:_ GET
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/1/likes (/post/<int:post_id>/likes)
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
+* * _SUCCESSFUL REPONSE EXAMPLE:_ A successful response should return a list of JSON dictionaries of all of the likes associated with the post identified by post_id in the endpoint. Each response should contain the `id` (like_id), as well as the `username` of the user who posted the like. It should also display the `id` (post_id) of the associated post. Here is an example of retrieving all of the likes on post with ID "2":
+
+![get_all_likes](/src/docs/get_all_likes.png)
+
+* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching post_id is found, the system will return a 404 error like this:
+
+![post_not_found](/src/docs/post_not_found.png)
+
+
+**LIKE A POST**
+
+* _HTTP verb:_ POST
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/1/likes (/posts/<int:post_id>/likes)
+* _BODY/HEADER REQUIRED:_ Although POST methods usually require body data, this endpoint does not require any as there is no content being posted. A JWT token is required to use this endpoint, as the system needs to authenticate the account/user attempting to post the like.
+* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response should contain the `id` (like_id) created, as well as the `username` of the user who posted the like. It should also display the `id` (post_id) of the associated post.
+
+![succ_like_post](/src/docs/succ_like_post.png)
+
+* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching post_id is found, the system will return a 404 error like this:
+
+![post_not_found](/src/docs/post_not_found.png)
+
+If the user attempts to like a post that they own, a 403 error message will be returned:
+
+![cannot_like_own_post](/src/docs/cannot_like_own_post.png)
+
+If the use has already liked the post, a 400 error message will be returned:
+
+![already_liked](/src/docs/already_liked.png)
+
+
+
+**DELETE A COMMENT**
+
+* _HTTP verb:_ DELETE
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/1/likes/1 (/post/<int:post_id>/likes/<int:like_id>)
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. However, a JWT token is required, as the system needs to be able to recognise the account from which the comment is posted. Further authorisation has been added to this endpoint, requiring the JWT provided to belong to either the owner of the comment or an administrator in order for it to be successfully executed. 
+* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response for this endpoint should return a message indicating to the user that this action has been performed:
+
+![like_removed](/src/docs/like_removed.png)
+
+* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching post_id is found, the system will return a 404 error like this:
+
+![like_not_found](/src/docs/like_not_found.png)
+
+If the JWT token provided does not match the owner of the account or is not an admin account, this error message will be returned:
+
+![unauthorised](/src/docs/unauthorised.png)
+
+
+
+
+
 ### THREAD ENDPOINTS
 
 
@@ -876,7 +938,6 @@ It will also require a JWT token to authenticate the user before allowing it to 
 
 
 
-
 **EDIT/UPDATE AN EXISTING THREAD**
 
 * _HTTP verb:_ PUT, PATCH
@@ -919,6 +980,96 @@ And if a JWT is provided but does not belong to the thread creator or admin, it 
 
 ![succ_deleted](/src/docs/succ_deleted_msg.png)
 
+
+
+
+### FOLLOWER ENDPOINTS
+
+
+**FETCH ALL FOLLOWERS OF A USER**
+
+* _HTTP verb:_ GET
+* _PATH/ROUTE:_ http://127.0.0.1:8080/users/1/followers (/users/<int:user_id>/followers)
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
+* _SUCCESSFUL RESPONSE EXAMPLE:_ This endpoint should display a list of accounts following the specified user. A successful response should return a list of JSON dictionaries containing the field `follower_id`, displaying the `id` of the users following the user, and the `followed_id`, which should correlate to the user_id user in the endpoint. This is an example of a successful response in receiving the list of followers for `user_id`/`followed_id` "2":
+
+![get_all_followers](/src/docs/get_all_followers.png)
+
+* _UNSUCCESSFUL RESPONSE EXAMPLE:_ If the user ID in the endpoint cannot be found, a 404 error message will be returned:
+
+![user_not_found](/src/docs/user_not_found.png)
+
+
+
+**FETCH USERS A SPECIFIC USER IS FOLLOWING**
+
+* _HTTP verb:_ GET
+* _PATH/ROUTE:_ http://127.0.0.1:8080/users/1/following (/users/<int:user_id>/following)
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
+* _SUCCESSFUL RESPONSE EXAMPLE:_ This endpoint should display a list of accounts being followed by the specified user. A successful response should return a list of JSON dictionaries containing the field `follower_id`, which should correlate with the user_id passed in the endpoint, and the `followed_id`, which should correlate with the user_id of the account following the user identified in the endpoint. This is an example of a successful response:
+
+![get_following](/src/docs/get_following.png)
+
+* _UNSUCCESSFUL RESPONSE EXAMPLE:_ If the user ID in the endpoint cannot be found, a 404 error message will be returned:
+
+![user_not_found](/src/docs/user_not_found.png)
+
+If the user is not following anyone, a 200 message will be returned to the user:
+
+![not_following_anyone](/src/docs/not_following_anyone.png)
+
+
+
+
+**FOLLOW AN ACCOUNT**
+
+* _HTTP verb:_ POST
+* _PATH/ROUTE:_ http://127.0.0.1:8080/users/follow (/users/follow)
+* _BODY/HEADER REQUIRED:_ Within the payload, a `followed_id` will need to be provided on JSON format. This should contain the number of the ID of the account they wish to follow. Here is an example of a valid payload:
+```
+{
+	"followed_id": 4
+}
+```
+* _SUCCESSFUL RESPONSE EXAMPLE:_ This endpoint should display a list of accounts being followed by the specified user. A successful response should return a list of JSON dictionaries containing the field `follower_id`, which should correlate with the user_id passed in the endpoint, and the `followed_id`, which should correlate with the user_id of the account following the user identified in the endpoint. This is an example of a successful response:
+
+![succ_follow](/src/docs/succ_follow.png)
+
+* _UNSUCCESSFUL RESPONSE EXAMPLE:_ If the user ID in the endpoint cannot be found, a 404 error message will be returned:
+
+![user_not_found](/src/docs/user_not_found.png)
+
+If the user attempts to follow themselves, a 400 error message will be returned:
+
+![cannot_follow_self](/src/docs/cannot_follow_self.png)
+
+If the use attempts to follow someone they are already following, a 400 error message will be returned:
+
+![already_following](/src/docs/already_following.png)
+
+
+
+**DELETE A THREAD**
+
+* _HTTP verb:_ DELETE
+* _PATH/ROUTE:_ http://127.0.0.1:8080/users/1/unfollow (/users/<int:user_id>/unfollow)
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. However, a JWT token is required, as the system needs to be able to recognise the account from which the comment is posted. Further authorisation has been added to this endpoint, requiring the JWT provided to belong to either the owner of the comment or an administrator in order for it to be successfully executed.
+* _SUCCESSFUL RESPONSE EXAMPLE:_  A successful response will return a message to the user indicating that the action has been performed:
+  
+![succ_unfollow](/src/docs/succ_unfollow.png)
+  
+  
+* _UNSUCCESSFUL RESPONSE EXAMPLE:_ If the user ID in the endpoint cannot be found, a 404 error message will be returned:
+
+![user_not_found](/src/docs/user_not_found.png)
+
+If the user is already not following this user, a 400 error message will be returned:
+
+![already_unfollowed](/src/docs/already_unfollowed.png)
+
+If JWT is provided but does not belong to the thread creator or admin, it will return this error:
+
+![unauthorised](/src/docs/unauthorised.png)
 
 
 
