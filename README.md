@@ -573,7 +573,7 @@ Here's an example of how it would look if the user decided to include more profi
 
 * _UNSUCCESSFUL REPONSE EXAMPLE:_ Here are a series of potential error messages that may arise depending on the issue:
 
-![autherr1](autherr1) ![autherr2](autherr2) ![autherr3](autherr3) ![autherr4](autherr4) ![autherr5](autherr5)
+![autherr1](/src/docs/autherr1.png) ![autherr2](/src/docs/autherr2.png) ![autherr3](/src/docs/autherr3.png) ![autherr4](/src/docs/autherr4.png) ![autherr5](/src/docs/autherr5.png)
 
 
 
@@ -636,7 +636,7 @@ If not JWT is provided, this error message will be returned:
 
 If the user attempts to edit their own email address, this error message will be returned:
 
-! [can't_edit_email](/src/docs/can't_edit_email.png)
+![can't_edit_email](/src/docs/can't_edit_email.png)
 
 If there is no valid user_id that matches the id passed in the URL, this error message will be returned:
 
