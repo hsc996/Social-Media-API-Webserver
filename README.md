@@ -421,14 +421,252 @@ After seeding the database, the column displayed should involve `id` (like_id, P
 
 
 ## 8. Explain how to use this application’s API endpoints. Each endpoint should be explained, including the following data for each endpoint:
-### * HTTP verb
-### * Path or route
-### * Any required body or header data
-### * Response
+## * HTTP verb
+## * Path or route
+## * Any required body or header data
+## * Response
+
+
+### COMMENT ENDPOINTS
+
+**FETCH ALL COMMENTS ON A POST**
+
+* _HTTP verb:_ GET
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/1/comments (/posts/<int:post_id>/comments)
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
+* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response should return a JSON dictionary of all of the comments associated with the post identified by post_id in the endpoint. It will also return the `body`, `timestamp` and `thread_id` (if applicable) associated with the comment. Here is an example:
+
+![get_all_comments](/src/docs/get_all_comments.png)
+
+* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching post_id is found, the system will return a 404 error like this:
+
+![post_not_found](/src/docs/post_not_found.png)
+
+If the post exists but there are no comments associated with that post, the system will return a message like this:
+
+![no_comments_found](/src/docs/no_comments_found.png)
 
 
 
-### POST CONTROLLERS
+**FETCH ONE SPECIFIC COMMENT**
+
+* _HTTP verb:_ GET
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/1/comments/1 (/posts/<int:post_id>/comments/<int:comment_id>)
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
+* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response should return a JSON dictionary of all of the comments associated with the post identified by post_id in the endpoint. It will also return the `body`, `timestamp` and `thread_id` (if applicable) associated with the comment. Here is an example:
+
+![get_one_comment](/src/docs/get_one_comment.png)
+
+* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching post_id is found, the system will return a 404 error like this:
+
+![post_not_found](/src/docs/post_not_found.png)
+
+If the post exists but the `comment_id` provided does not match the `post_id` provided, the system will return a message like this:
+
+![no_comment_on_post](/src/docs/commentdoesnotbelongtopost.png)
+
+
+
+**POST A COMMENT**
+
+* _HTTP verb:_ POST
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/1/comments (/posts/<int:post_id>/comments)
+* _BODY/HEADER REQUIRED:_ The body data will require a `comment_body` to be passed in order to successfully execute this endpoint. Furthermore, a JWT token is required, as the system needs to be able to recognise the account from which the comment is posted.
+* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response should return a JSON dictionary including the `id` (comment_id), `comment_body`, `timestamp`. It also will return the "username" from the `user` field and the `body`, `timestamp` and `thread_id` (if applicable) of the associated post. Here is an example:
+
+![succ_commentcreated](/src/docs/succ_commentcreated.png)
+
+* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching post_id is found, the system will return a 404 error like this:
+
+![post_not_found](/src/docs/post_not_found.png)
+
+If the `comment_body` is empty or isn't between 1-200 characters, a bad reuqest error will be returned:
+
+![comment_400](/src/docs/comment_400.png)
+
+
+
+**EDIT A COMMENT**
+
+* _HTTP verb:_ PUT, PATCH
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/1/comments/1 (/posts/<int:post_id>/comments/<int:comment_id>)
+* _BODY/HEADER REQUIRED:_ The body data will require a `comment_body` to be passed in order to successfully execute this endpoint. Furthermore, a JWT token is required, as the system needs to be able to recognise the account from which the comment is posted. Further authorisation has been added to this endpoint, requiring the JWT provided to belong to either the owner of the comment or an administrator in order for it to be successfully executed.
+* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response should return a JSON dictionary including the `id` (comment_id), `comment_body`, `timestamp`. It also will return the "username" from the `user` field and the `body`, `timestamp` and `thread_id` (if applicable) of the associated post. Here is an example:
+
+![comment_edited](/src/docs/comment_edited.png)
+
+* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching post_id is found, the system will return a 404 error like this:
+
+![post_not_found](/src/docs/post_not_found.png)
+
+If the `comment_body` is empty or isn't between 1-200 characters, a bad reuqest error will be returned:
+
+![comment_400](/src/docs/comment_400.png)
+
+If the JWT token provided does not match the owner of the account or is not an admin account, this error message will be returned:
+
+![unauthorised](/src/docs/unauthorised.png)
+
+
+
+**DELETE A COMMENT**
+
+* _HTTP verb:_ DELETE
+* _PATH/ROUTE:_ http://127.0.0.1:8080/posts/1/comments/1 (/posts/<int:post_id>/comments/<int:comment_id>)
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. However, a JWT token is required, as the system needs to be able to recognise the account from which the comment is posted. Further authorisation has been added to this endpoint, requiring the JWT provided to belong to either the owner of the comment or an administrator in order for it to be successfully executed. 
+* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response for this endpoint should return a message indicating to the user that this action has been performed:
+
+![comment_deleted](/src/docs/comment_deleted.png)
+
+* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching post_id is found, the system will return a 404 error like this:
+
+![post_not_found](/src/docs/post_not_found.png)
+
+If the JWT token provided does not match the owner of the account or is not an admin account, this error message will be returned:
+
+![unauthorised](/src/docs/unauthorised.png)
+
+
+
+
+
+### USER ENDPOINTS
+
+
+**FETCH A USER'S PROFILE**
+
+* _HTTP verb:_ GET
+* _PATH/ROUTE:_ http://127.0.0.1:8080/auth/user/1 (/auth/user/<int:user_id>)
+* _BODY/HEADER REQUIRED:_ No body data or specific headers are required for this method. One does not need to be authorised/JWT is not required to use this endpoint.
+* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response should return a JSON dictionary of all of the specified user's profile details, their posts and other user's comments/likes on those posts:
+
+![user_profile_1](/src/docs/user_prof_1.png) ![user_profile_2](/src/docs/user_prof_2.png)
+
+* _UNSUCCESSFUL REPONSE EXAMPLE:_ If no matching user_id is found, a 404 error message will be returned:
+```
+{
+    "error: "User with ID {user_id} not found."
+}
+```
+
+
+
+**REGISTER NEW PROFILE**
+
+* _HTTP verb:_ POST
+* _PATH/ROUTE:_ http://127.0.0.1:8080/auth/register (/auth/register)
+* _BODY/HEADER REQUIRED:_ In order to register an account, the only fields required in the body data is `username`, `email` and `password`. The payload should contain these 3 fields and their associated attributes in JSON format. Here's an example of the body data:
+```
+{
+	"username": "username5",
+	"email": "user5@email.com",
+	"password": "password1234"
+}
+```
+* _SUCCESSFUL REPONSE EXAMPLE:_ In the scenario provided above, the user created would only have the required (not nullable) fields in reponse, and a successful response would look something like this:
+
+![register_user_bare](/src/docs/register_user_bare.png)
+
+Here's an example of how it would look if the user decided to include more profile details in the optional fields:
+
+![moredetails_profilereg](/src/docs/moredetails_profilereg.png)
+
+* _UNSUCCESSFUL REPONSE EXAMPLE:_ Here are a series of potential error messages that may arise depending on the issue:
+
+![autherr1](autherr1) ![autherr2](autherr2) ![autherr3](autherr3) ![autherr4](autherr4) ![autherr5](autherr5)
+
+
+
+
+**LOGIN TO ACCOUNT**
+
+* _HTTP verb:_ POST
+* _PATH/ROUTE:_ http://127.0.0.1:8080/auth/login (/auth/login)
+* _BODY/HEADER REQUIRED:_ In order to login to an account, the only fields required in the body data are `email` and `password`. The payload should contain these 2 fields and their associated attributes in JSON format. Here's an example of the body data:
+```
+{
+	"email": "admin@email.com",
+	"password": "123456"
+}
+```
+* _SUCCESSFUL REPONSE EXAMPLE:_ While using the example above, as it is an admin account, a successful response would return `"is_admin": true`, whereas this would usually be "false" by default. Every reponse will return the `email`, `is_admin` and `token` fields; the latter of which should be a JWT token hashed by Bcrypt:
+
+![succ_auth_login](/src/docs/succ_auth_login.png)
+
+* _UNSUCCESSFUL REPONSE EXAMPLE:_ Should the user attempt to login with an invalid or unregistered email address, or get their password wrong, a 401 error message will be returned:
+```
+{
+    "error": "Invalid email or password"
+}
+```
+If the system catches any another database-related issues that might occur during the query, the user will receive a 500 error message:
+```
+{
+    "error": "Database error"
+}
+```
+
+
+
+**EDIT USER PROFILE**
+
+* _HTTP verb:_ PUT, PATCH
+* _PATH/ROUTE:_ http://127.0.0.1:8080/auth/editprofile/4 (/auth/editprofile/<int:user_id>)
+* _BODY/HEADER REQUIRED:_ Using this route, the owner of the profile should be able to update any of the fields in their profile, except their email address. The body data can edit any of these fields: `username`, `password`, `profile_picture_url`, `bio`, `date_of_birth`, `location`, `website_url`, `linkedin_url`, `github_url`, `job_title`. Here's an example of a valid payload:
+```
+{
+	"username": "newusername",
+	"location": "San Diego, CA",
+	"job title": "Software Engineer"
+}
+```
+Furthermore, a valid JWT is required to perform this action.
+
+* _SUCCESSFUL REPONSE EXAMPLE:_ For this endpoint, I've included an `auth_user_action` decorator which checks whether the JWT token provided matches the `user_id` passed in the the URL in order to authorise whether the user is the owner of the account before allowing them to perform this action. This decorator will also allow the administrator to perform this action. This is what a successful reponse example would look like:
+
+![succ_editprofile](/src/docs/succ_editprofile.png)
+
+* _UNSUCCESSFUL REPONSE EXAMPLE:_ Should the account not belong to the user or admin accounts, an error message will be returned informing the user that they are not allowed to perform this action:
+
+![unauthorised](/src/docs/unauthorised.png)
+
+If not JWT is provided, this error message will be returned:
+
+![missing_auth_header](/src/docs/missing_auth_header.png)
+
+If the user attempts to edit their own email address, this error message will be returned:
+
+! [can't_edit_email](/src/docs/can't_edit_email.png)
+
+If there is no valid user_id that matches the id passed in the URL, this error message will be returned:
+
+![user_not_found](/src/docs/user_not_found.png)
+
+
+**DELETE PROFILE**
+
+* _HTTP verb:_ DELETE
+* _PATH/ROUTE:_ http://127.0.0.1:8080/auth/deleteprofile/4 (/auth/deleteprofile/<int:user_id>)
+*  _BODY/HEADER REQUIRED:_ This endpoint should allow the user to delete their account, including all associated threads, posts, comments and likes executed by this account. Furthermore, it should delete all posts, comments and likes associated with his deleted content. It will do this automatically, so no body data or headers will be required in the payload. However, a valid JWT token matching the user_id passed in the URL will be required.
+* _SUCCESSFUL REPONSE EXAMPLE:_ A successful response will return a message, notifying the user that the action was successful:
+
+![delete_acc](/src/docs/delete_acc.png)
+
+* _UNSUCCESSFUL REPONSE EXAMPLE:_ For this endpoint, I've included an `auth_user_action` decorator which checks whether the JWT token provided matches the `user_id` passed in the the URL in order to authorise whether the user is the owner of the account before allowing them to perform this action. This decorator will also allow the administrator to perform this action. Should the account not belong to the user or admin accounts, an error message will be returned informing the user that they are not allowed to perform this action:
+
+![unauthorised](/src/docs/unauthorised.png)
+
+If not JWT is provided, this error message will be returned:
+
+![missing_auth_header](/src/docs/missing_auth_header.png)
+
+If there is no valid user_id that matches the id passed in the URL, this error message will be returned:
+
+![user_not_found](/src/docs/user_not_found.png)
+
+
+
+### POST ENDPOINTS
 
 
 **FETCH ALL POSTS**
@@ -586,7 +824,7 @@ And if a JWT is provided but does not belong to the post creator or admin, it wi
 
 
 
-### THREAD CONTROLLERS
+### THREAD ENDPOINTS
 
 
 **FETCH ALL THREADS**

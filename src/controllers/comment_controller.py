@@ -7,7 +7,7 @@ from marshmallow.exceptions import ValidationError
 from init import db
 from models.comment import Comment, comment_schema, comments_schema
 from models.post import Post
-from utils import auth_user_action
+from utils import auth_comment_action
 
 
 comments_bp = Blueprint("comments", __name__, url_prefix="/posts/<int:post_id>/comments")
@@ -27,6 +27,9 @@ def get_all_comments(post_id):
         
         stmt = db.select(Comment).filter_by(post_id=post_id).order_by(Comment.timestamp.desc())
         comments = db.session.scalars(stmt).all()
+
+        if not comments:
+            return {"message": "There are no comments that belong to this post yet."}, 200
 
         return comments_schema.dump(comments), 200
     
@@ -94,10 +97,51 @@ def create_comment(post_id):
         return {"error": "Internal Server Error"}, 500
 
 
+
+# Update comment - PUT, PATCH - /posts/<int:post_id>/comments/<int:comment_id>
+@comments_bp.route("/<int:comment_id>", methods=["PUT", "PATCH"])
+@jwt_required()
+@auth_comment_action
+def edit_comment(post_id, comment_id):
+    try:
+        post_stmt = db.select(Post).filter_by(id=post_id)
+        post = db.session.scalar(post_stmt)
+
+        if not post:
+            return {"error": f"Post with ID {post_id} not found."}, 404
+        
+        stmt = db.select(Comment).filter_by(id=comment_id)
+        comment = db.session.scalar(stmt)
+
+        if not comment:
+            return {"error": f"Comment with ID '{comment_id}' not found"}, 404
+        
+        if comment.post_id != post_id:
+            return {"error": f"Comment with ID '{comment_id}' does not belong to Post with ID {post_id}"}, 404
+        
+        body_data = request.get_json()
+        comment_body = body_data.get("comment_body", "").strip()
+
+        if not comment_body or len(comment_body) > 200:
+            return {"error": "Comment body must be between 1 and 200 characters and cannot be empty."}, 400
+        
+        comment.comment_body = comment_body or comment.comment_body
+        db.session.commit()
+        return comment_schema.dump(comment), 200
+    
+    except ValidationError as e:
+        return {"error": str(e)}, 400
+    
+    except Exception as e:
+        return {"error": "Internal Server Error"}, 500
+    
+
+
+
 # Delete Comment - DELETE - /posts/<int:post_id>/comments/<int:comment_id>
 @comments_bp.route("/<int:comment_id>", methods=["DELETE"])
 @jwt_required()
-@auth_user_action(Comment, "comment_id")
+@auth_comment_action
 def delete_comment(post_id, comment_id):
     try:
         post_stmt = db.select(Post).filter_by(id=post_id)
@@ -124,44 +168,6 @@ def delete_comment(post_id, comment_id):
         db.session.rollback()
         return {"error": "Internal Server Error"}, 500
 
-
-# Update comment - PUT, PATCH - /posts/<int:post_id>/comments/<int:comment_id>
-@comments_bp.route("/<int:comment_id>", methods=["PUT", "PATCH"])
-@jwt_required()
-@auth_user_action(Comment, "comment_id")
-def edit_comment(post_id, comment_id):
-    try:
-        post_stmt = db.select(Post).filter_by(id=post_id)
-        post = db.session.scalar(post_stmt)
-
-        if not post:
-            return {"error": f"Post with ID {post_id} not found."}, 404
-        
-        user_id = get_jwt_identity()
-        body_data = request.get_json()
-        stmt = db.select(Comment).filter_by(id=comment_id)
-        comment = db.session.scalar(stmt)
-
-        if not comment:
-            return {"error": f"Comment with ID '{comment_id}' not found"}, 404
-        
-        if comment.post_id != post_id:
-            return {"error": f"Comment with ID '{comment_id}' does not belong to Post with ID {post_id}"}, 404
-        
-        comment_body = body_data.get("comment_body")
-
-        if comment_body and len(comment_body) > 200:
-            return {"error": "Comment body must be between 1 and 200 characters."}, 400
-        
-        comment.comment_body = comment_body or comment.comment_body
-        db.session.commit()
-        return comment_schema.dump(comment), 200
-    
-    except ValidationError as e:
-        return {"error": str(e)}, 400
-    
-    except Exception as e:
-        return {"error": "Internal Server Error"}, 500
     
 
 
