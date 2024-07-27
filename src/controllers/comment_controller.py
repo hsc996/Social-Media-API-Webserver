@@ -14,10 +14,21 @@ comments_bp = Blueprint("comments", __name__, url_prefix="/posts/<int:post_id>/c
 
 
 
-
 # Fetch all comments - GET - /posts/<int:post_id>/comments
 @comments_bp.route("/", methods=["GET"])
 def get_all_comments(post_id):
+    """
+    Retrieves all the comments for a given post.
+
+    Queries the database for comments associated with a specific post ID and returns them ordered by timestamp.
+
+    Args:
+        post_id (int): The ID of the post for which to retrieve the comments.
+    
+    Returns:
+        JSON: Serialised comments with a 200 OK status if comments exist.
+        JSON: Error message with a 404 Not Found status if the post is not found.
+    """
     try:
         post_stmt = db.select(Post).filter_by(id=post_id)
         post = db.session.scalar(post_stmt)
@@ -42,6 +53,17 @@ def get_all_comments(post_id):
 # Fetch one particular comment - GET - /posts/<int:post_id>/comments/<int:comment_id>
 @comments_bp.route("/<int:comment_id>", methods=["GET"])
 def get_single_comment(post_id, comment_id):
+    """
+    Retrieves a single comment by its ID for a given post.
+
+    Args:
+        post_id (int): The ID of the post.
+        comment_id (int): The ID of the comment to retrieve.
+
+    Returns:
+        JSON: Serialised comment with a 200 OK status if comment is found.
+        JSON: Error message with a 404 Not Found status if the comment is not found.
+    """
     try:
         post = Post.query.get(post_id)
         if not post:
@@ -64,6 +86,18 @@ def get_single_comment(post_id, comment_id):
 @comments_bp.route("/", methods=["POST"])
 @jwt_required()
 def create_comment(post_id):
+    """
+    Create a new comment on a given post.
+
+    Validates and creates a comment associated with a specified post ID.
+
+    Args:
+        post_id (int): The ID of the post to comment on.
+
+    Returns:
+        JSON: Serialised comment with a 201 Created status if creation is successful.
+        JSON: Error message with a 400 Bad Request status if validation fails.
+    """
     try:
         body_data = request.get_json()
         stmt = db.select(Post).filter_by(id=post_id)
@@ -103,6 +137,18 @@ def create_comment(post_id):
 @jwt_required()
 @auth_comment_action
 def edit_comment(post_id, comment_id):
+    """
+    Updates an existing comment by its ID foe a given post.
+
+    Args:
+        post_id (int): The ID of the post.
+        comment_id (int): The ID of the comment to update.
+
+    Returns:
+        JSON: Serialised comment with a 200 OK status if update is successful.
+        JSON: Error message with a 404 Not Found status if the post or comment is not found.
+        JSON: Error messgae with a 400 Bad Request status if validation fails.
+    """
     try:
         post_stmt = db.select(Post).filter_by(id=post_id)
         post = db.session.scalar(post_stmt)
@@ -143,6 +189,17 @@ def edit_comment(post_id, comment_id):
 @jwt_required()
 @auth_comment_action
 def delete_comment(post_id, comment_id):
+    """
+    Deleted a comment by its ID for a given post.
+
+    Args:
+        post_id (int): The ID of the post.
+        comment_id (int): The ID of the comment to delete.
+
+    Returns:
+        JSON: Success message with a 200 OK status if deleted is successful.
+        JSON: Erro message with a 404 Not Found status if the post or comment is not found.
+    """
     try:
         post_stmt = db.select(Post).filter_by(id=post_id)
         post = db.session.scalar(post_stmt)

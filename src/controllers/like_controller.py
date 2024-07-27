@@ -14,6 +14,16 @@ likes_bp = Blueprint("likes", __name__, url_prefix="/posts/<int:post_id>/likes")
 # Fetch all likes on a post - GET - /post/<int:post_id>/likes
 @likes_bp.route("/", methods=["GET"])
 def get_post_likes(post_id):
+    """
+    Fetch all likes on a specific post.
+
+    Args:
+        post_id (int): The ID of the post.
+
+    Returns:
+        JSON: Serialised likes with 200 OK status if successful.
+        JSON: Error message with a 404 Not Found status if the post is not found.
+    """
     stmt = db.select(Post).filter_by(id=post_id)
     post = db.session.scalar(stmt)
 
@@ -29,6 +39,19 @@ def get_post_likes(post_id):
 @likes_bp.route("/", methods=["POST"])
 @jwt_required()
 def like_post(post_id):
+    """
+    Like a speicifc post.
+
+    Users can like a post they do not own. Prevents liking a post more than once.
+
+    Args:
+        post_id (int): The ID of the post to like.
+
+    Returns:
+        JSON: Serialised like with a 201 Created status if successful.
+        JSON: Error message with a 404 Not Found status if the post is not found.
+        JSON: Error message with a 403 Forbidden status if the user attempts to like their own post.
+    """
     try:
         user_id = get_jwt_identity()
         stmt = db.select(Post).filter_by(id=post_id)
@@ -66,6 +89,17 @@ def like_post(post_id):
 @jwt_required()
 @auth_like_action
 def unlike_post(post_id, like_id):
+    """
+    Removes a like from a specific post.
+
+    Args:
+        post_id (int): The ID of the post.
+        like_id (int): The Id of the like to remove.
+
+    Returns:
+        JSON: Success message with a 200 OK status if like is successful.
+        JSON: Error message with a 404 Not Found status if the like is not found.
+    """
     try:
         user_id = get_jwt_identity()
         stmt = db.select(Post).filter_by(id=post_id)

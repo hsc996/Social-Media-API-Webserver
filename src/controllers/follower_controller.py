@@ -11,9 +11,19 @@ from utils import auth_unfollow_action
 follower_bp = Blueprint("follower", __name__, url_prefix="/users")
 
 
-# Fetch followers of a user - GET - /users/<int:user_id>/followers
+# /users/<int:user_id>/followers
 @follower_bp.route("/<int:user_id>/followers", methods=["GET"])
 def get_followers(user_id):
+    """
+    Fetches the followers of a specific user.
+
+    Args:
+        user_id (int): The ID of the user.
+
+    Returns:
+        JSON: Serialised followers with a 200 OK status if successful.
+        JSON: Error message with a 404 Not Found status if the user is not found.
+    """
     stmt = db.select(User).filter_by(id=user_id)
     user = db.session.scalar(stmt)
 
@@ -25,9 +35,19 @@ def get_followers(user_id):
 
 
 
-# Fetch users a specific user is following - GET - /users/<int:user_id>/following
+# /users/<int:user_id>/following
 @follower_bp.route("/<int:user_id>/following", methods=["GET"])
 def get_following(user_id):
+    """
+    Fetches the users that a specific user is following.
+
+    Args:
+        user_id (int): The ID of the user.
+    
+    Returns:
+        JSON: Serialised following list with a 200 OK status if successful.
+        JSON: Error message with a 404 Not Found status if the user is not found.
+    """
     user_stmt = db.select(User).filter_by(id=user_id)
     user = db.session.scalar(user_stmt)
 
@@ -47,10 +67,20 @@ def get_following(user_id):
     
 
 
-# Follow a user - POST - /users/follow
+# /users/follow
 @follower_bp.route("/follow", methods=["POST"])
 @jwt_required()
 def follow():
+    """
+    Follows a specific user.
+
+    Users can follow other users except themselves.
+
+    Returns:
+        JSON: Serialised follow data with a 201 Created status if successful.
+        JSON: Error message with a 404 Not Found status if the user to follow is not found.
+        JSON: Error message with a 400 Bad Request status if invalid input or user has already been followed.
+    """
     current_user_id = get_jwt_identity()
     try:
         followed_id = request.json.get("followed_id")
@@ -90,11 +120,22 @@ def follow():
 
 
 
-# Unfollow a user - DELETE - /users/<int:user_id>/unfollow
+# /users/<int:user_id>/unfollow
 @follower_bp.route("/<int:user_id>/unfollow", methods=["DELETE"])
 @jwt_required()
 @auth_unfollow_action
 def unfollow_user(user_id):
+    """
+    Unfollow a specific user.
+
+    Args:
+        user_id (int): The ID of the user to unfollow.
+
+    Return:
+        JSON: Success message with a 200 OK status if successful.
+        JSON: Error message with a 404 Not Found status if user is not found.
+        JSON: Error message with a 400 Bad Request status if the user is not followed.
+    """
     current_user_id = get_jwt_identity()
     try:
         if int(current_user_id) == int(user_id):
