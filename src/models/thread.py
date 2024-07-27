@@ -33,7 +33,7 @@ class InnovationThread(db.Model):
         return content
 
 
-class InnovationThreadSchema(ma.SQLAlchemyAutoSchema):
+class InnovationThreadSchema(ma.Schema):
 
     user = fields.Nested("UserSchema", only=["id", "username"])
     posts = fields.Nested("PostSchema", only=["body", "timestamp", "comments", "likes"], many=True)

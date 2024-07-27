@@ -22,9 +22,6 @@ This application aims to achieve several key objectives. Firstly, it seeks to st
 
 
 # 2. Describe the way tasks are allocated and tracked in your project.
-**includes proof of thorough usage of specific task management tools through the length of the project**
-
-
 
 
 Github project board: https://github.com/users/hsc996/projects/4
@@ -45,15 +42,16 @@ Github project board: https://github.com/users/hsc996/projects/4
 ![github_roadmap3](/src/docs/github_roadmap3.png)
 
 
-I developed an implementation plan using a Kanban board in Github Projects, which outlined tasks based on priority. I also used the "roadmap" view in order to visually represent my task timeline by arranging tasks in order of priority per day. While critical tasks were included early in the planning phase, additional tasks were added as specific errors arose. Similarly, I decided to add the "Innovation Thread" later in the planning process in order to make the design more complex, which can be noted in the task list.
+I developed an implementation plan using a Kanban board in Github Projects, which outlined tasks based on priority. I also used the "roadmap" view in order to visually represent my task timeline by arranging tasks in order of priority per day. While critical tasks were included early in the planning phase, additional tasks were added as specific errors arose. Similarly, I decided to add the "Innovation Thread" later in the planning process in order to make the design more complex, which can be noted to arise later in the task list.
 
 
 
 # 3. List and explain the third-party services, packages and dependencies used in this app.
 
+
 **1. Flask**
 
-Flask is a light-weight WSGI applicaiton framework for Python which facilitates routing, request handling and response management for web applications. I've utilised the Flask framework to:
+Flask is a light-weight WSGI applicaiton framework for Python which facilitates routing, request handling and response management for web applications. The lightweight nature makes it particularly suitable for microservices architechtures, where small, indeonedent services are easier to develop, deploy and maintain. I've utilised the Flask framework to:
 
     * Initiilise the main setup file
     * Define routes (endpoints) for handling HTTP requests
@@ -68,23 +66,78 @@ In addtion, I have incorporated several Flask extensions and modules to handle s
 
 **2. Flask-SQLAlchemy**
 
-Flask-SQLAlchemy (F-S) is an extension for Flask that inegrates SQLAlchemy, a crucial Object-Relational Mapping (ORM) tool for Python. Within my application, F-S is used to facilitate the interaction between my Flask web application and the PostgreSQL database. Here is how it's used:
+Flask-SQLAlchemy (F-S) is an extension for Flask that inegrates SQLAlchemy, a crucial Object-Relational Mapping (ORM) tool for Python. Using an ORM like SQLAlchemy reduces boilerplate code and improves maintainability by abstracting the SQL queries  into Python classes and methods, making the codebase more manageable and less error-prone. Within my application, F-S is used to facilitate the interaction between my Flask web application and the PostgreSQL database. Here is how it's used:
 
-    * Database Integration --> this package is user to simplify the connection the the PostgreSQL database by providing a configuration interface within my app. For example:
-    ```
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
-    ```
-    This example utilises the `os` module to retrieve the database URI from environment variables, which is then passed to F-S to handle the configuration and establish the connection with the database
+* _Database Integration_ --> this package is user to simplify the connection the the PostgreSQL database by providing a configuration interface within my app. For example:
+```
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL")
+```
+This example utilises the `os` module to retrieve the database URI from environment variables, which is then passed to F-S to handle the configuration and establish the connection with the database
 
-    * ORM Mapping --> Within this application SQLAlchemy is imported from F-S in order to define the models/objects. It is used here to translate each model class to a corresponding table within the database. The attributes of each class represent columns within the table.
+* _ORM Mapping_ --> Within this application SQLAlchemy is imported from F-S in order to define the models that map to corresponding tables in the database. For example, the `User` class inherits from `db.Model`, which is a base class provided by F-S. This inheritance allows the `User` class to represent a table in PostgreSQL. Attributes of the class (e.g. `id`, `username`, `email`) correspond to columnns in the table. SQLAlchemy handles the translation between these Python class definitions and the database schema, streamlining data manipulation and retrival.
 
+* _Session Management_ --> F-S manages datase session, which are used to interst with the database. It provids a session object for executing queries, committing transactions, and rolling back when necessary. These features make it seamless to execute CRUD (Create, Read, Update, Delete) oeprations (e.g. `db.session.add(new_user)` adds the nuw_user to the session, while `db.session.commit()` commits the transaction, saving the new user to the database).
 
-
-
-
-
+* _Querying_ --> this extension allows users to build and execute queries using Python code instead of raw SQL. This includes querying records, filtering results and joining tables. The query attribute on models provides methods to retrieve and manipulate data (e.g. `Post.query.filter_by(user_id=user_id).all()` retrieves all posts associated with the given user ID).
 
 
+**3) Flask-JWT-Extended**
+
+Flask-JWT-Extended is a Flask extension that enables secure JWT (JSON Web Token) authentication. The JWT tokens offer dual functionality, as they can be used to verify user identities and can also be used to restrict assess to certain endpoints based on token validity.
+
+* _Token Creation_ --> the `create_access_token` function generates a token that includes user identity and  other claims. This token is then sent to the client and used in subsequent requests for authentication.
+
+* _Expiration handling_ --> Tokens can be configured to expire after a certain period, enhancing security by limiting the window of time a token is valid. This is managed by setting an `expires_delta` when creating the token, ensuring that user need to re-authenticate periodically.
+
+
+I've utilised this extension for both of these features within my app; for example, the `jwt_required()` decorator is used within the `delete_comment` endpoint to both authenticate the user of the account and used in conjunction with the `auth_comment_action` decorator to determine whether this use is authorised to perform the "delete comment" action.
+
+
+**4) Marshmallow**
+
+Marshmallow is a library that is used for serialisation and deserialisation of data within the web application. This means it converts complex data types, like ORM models, to and from JSON format. "Serialisation" refers to the transformation of model instances in JSON data to be returned into API responses. An exmaple within my applicaion is that the `UserSchema` is used to serialise a `User` model instance into JSON format. The `get_user` endpoint the retrieves a user by ID and uses the shcema to convert the use object to JSON. "Deserialisation" validates and parses JSON input data into Python objects for processing. For example, the `create_user` endpoint in my app handles a POST request to create a new user. The `user_schema.load()` method is then used to deserialise the incoming JSNO data into a `User` model instance. Marshomallow's validation capabilities ensure data integrity by allowing you to enforce constraints and rules on input data, which helps prevent errors and maintain consistency.
+
+
+**5) Bcrypt**
+
+Bcrypt is a library specifically designed to securely hash and check passwords, ensuring user credentials are stored safely. Hashing converts the user's given password into a fixed-length string of characters, which is secure and irreversible. Bcrypt automatically adds a unique salt to each password hash, ensuring identical passwords have different hashes. Salting is a critical aspect of bcrypt's security model, as it helps protect against rainbow table attacks by ensuring that identical passwords have different hashes due to unique salts. For example: Within the `register_user` controller, I've used `bcrypt.generate_password_hash(password)`, which uses bcrypt to add salt and produces a hash, while `.decode('utf-8')` converts the hash from bytes to a UTF-8 string. This makes it easier to store within the database. Furthermoe, when a user logs in, I use `bcrypt.check_password_hash(user.password, body_data.get("password"))` to retrieve the hashed password from the database and the plain text password from the login attempt. It then hashes the input password using the same salt and algorithm, then compares it to the stored hash. If the passwords match, the user is authenticated.
+
+
+**6) psycopg2-binary**
+
+The `psycogp2-binary` package is a pre-compiled version of `psycopg2`, which simplifies installation by avoiding the need to compile the library from source. SQLAlchemy uses `psycopg2-binary` under the hood to communicate with the database and handle database sessions, queries and transactions. Within my application the `errorcodes` modules form `psycopg2` is used to handle specific PostgreSQL error codes. For example, checking for `UNIQUE_VIOLATION` to manage unique constraint errors.
+
+
+**7) datetime**
+
+`datetime` is a built-in Python modules form SQLAlchemy that provides access to SQL functions such as `datetime`, `date`, `time` and `timedelta`. Within this app, I've employed this module to use functions like `datetime` to manage the timestamps on posts and comments. Furthermore, I've also used the `timedelta` function to set an expiry period for the JWT (e.g. `expires_delta=timedelta(days=1)`).
+
+
+**8) sqlalachmy.func**
+
+`sqlalchemy.func` is a module from SQLAlchemy tha tprovides access to the SQL functions like COUNT, SUM, AVG, etc. These function can be used in SQL queries to perform aggregate operations and other SQL operations directly from SQLAlchemy. For example, I've imported `func` in the Post and Comment models like so `timestamp = db.Column(db.DateTime, default=func.now())`. The use of `func.now()` calls this SQL function to ensure that everytime a new record is inserted into the database, the `timestamp` column is automatically set to the current date and time (without needing to manually specify it within the application code).
+
+
+**9) os**
+
+`os` is a built-in Python module used for interaction with the operating system. It allows access to environment variables, file operations and other OS-level interactions. I use this within my API, I've used `is.environ.get("DATABASE_URL")` to retrieve environment variables to configure the database connection.
+
+
+**10) functools.wraps**
+
+`functools.wraps` is a decorator from the `functools` modules that is used to preserve the metadata (like the function name, docstring, etc.) of the original function when it is decorated. When creating custom decorators for authentication and authorisation, I've employed the `@wraps` function to ensure that the decorated function retains its original metadata.
+
+
+**11) sqlalchemy.orm.exc.NoResultFound**
+
+`NoResultFound` is an exception raised by SQLAlchemy when a query that was expected to return a single result does not return any results. I've utilised it for this very purpose within my custom authorisationd decorators to verify the authentication and authorisation of a user:
+```
+        try:
+            like = db.session.query(Like).filter_by(id=like_id).one()
+        except NoResultFound:
+            return {"error": f"Like with ID {like_id} not found."}, 404
+```
+Within this example, I've used this exception to handle a case where a "like" is not found in order to handle this error gracefully and return a meaningful error message.
 
 
 
@@ -244,7 +297,7 @@ SQLAlchemy's ORM features facilitate seamless integration between Python code an
 ```
 
 # 6. Design an entity relationship diagram (ERD) for this app’s database, and explain how the relations between the diagrammed models will aid the database design. 
-### This should focus on the database design BEFORE coding has begun, eg. during the project planning or design phase. (12 POINTS)
+### This should focus on the database design BEFORE coding has begun, eg. during the project planning or design phase.
 
 
 

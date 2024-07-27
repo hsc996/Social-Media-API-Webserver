@@ -31,7 +31,6 @@ def view_profile(user_id):
 @auth_bp.route("register", methods=["POST"])
 def register_user():
     try:
-        body_data = request.get_json()
         body_data = UserSchema().load(request.get_json())
 
         user = User(
@@ -50,6 +49,8 @@ def register_user():
 
         if password:
             user.password = bcrypt.generate_password_hash(password).decode('utf-8')
+        else:
+            return {"error": "Password is required."}, 400
 
         db.session.add(user)
         db.session.commit()

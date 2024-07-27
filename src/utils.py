@@ -1,11 +1,13 @@
-from functools import wraps
-from flask_jwt_extended import get_jwt_identity
-from sqlalchemy.orm.exc import NoResultFound
 from init import db
 from models.user import User
 from models.comment import Comment
 from models.like import Like
+from models.follower import Follower
 from models.thread import InnovationThread
+
+from functools import wraps
+from flask_jwt_extended import get_jwt_identity
+from sqlalchemy.orm.exc import NoResultFound
 
 
 def auth_user_action(model, id_arg_name):
