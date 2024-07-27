@@ -194,7 +194,29 @@ _1) Mapping Classes (Models) to Tables_
 Within the "models" folder is a series of files, each containing the models and schema of each main data table. Each 'entity' in the ERD are translated into SQLAlchemy models: Within my code, the `InnovationThread`, `User`, `Post`, `Comment`, `Like` and `Follower` classes are the models I've created, passing the `(db.Model)` attribute so that SQLAlchemy can recognise these classes are the objects to be mapped into the relational database as tables. Each of the attributes within the ERD are defined as columns using `db.Column` and data types and constraints are specified (e.g. `comment_body = db.Column(db.String, nullable=False)`). This is necessary in order for SQLAlchemy to understand how to accurately translate the data into the database.
 
 
-_2) Relationships and Associations_
+_2) Schema Definition_
+
+In addition to defining models, SQLAlchemy works with Marshmallow to handle schema definitions. While SQLAlchemy maps models to database tables, Marshmallow provides provides a way to serialise and deserialise the data to and from JSON format.
+
+For example, the `UserSchema` class uses Marshmallow to specify how use data should be converted to and from JSON:
+```
+class UserSchema(ma.Schema):
+    threads = fields.List(fields.Nested('InnovationThreadSchema', exclude=["user"]))
+    posts = fields.List(fields.Nested('PostSchema', exclude=["user"]))
+    comments = fields.List(fields.Nested('CommentSchema', exclude=["user"]))
+    likes = fields.List(fields.Nested('LikeSchema', exclude=["user"]))
+    followers = fields.List(fields.Nested('UserSchema', only=["id", "username"]))
+    following = fields.List(fields.Nested('UserSchema', only=["id", "username"]))
+
+    email = fields.String(
+    required=True,
+    validate=validate.Regexp(r"^\S+@\S+\.\S+$", error="Invalid Email Format")
+    )
+```
+This schema defines which fields are included in the JSON representation, validates data (such as email format and password strength), and ensured that the data adheres to expected constraints before it is saved to the database.
+
+
+_3) Relationships and Associations_
 
 These models are also used to establish the relationships and associations within object relational mapping. Within these models, the relationships (which would mirror those of the ERD) have also be defined using the the 'back_populates' attribute. For example, the use of `user = db.relationship("User", back_populates="threads")` in the "InnovationThread" Model ensures that the `User` model's `threads` attribute is kept in sync, allowing bidirectional access between threads and their associated user. However, these attributes/associations look different depending on the intended nature of the entity relationship. For example, the `User` class has a one-to-many relationship with the `InnovationThread` and `Post` classes, as specified here:
 ```
@@ -212,7 +234,7 @@ followed = db.relationship("User", foreign_keys=[followed_id], back_populates="f
 This setup allows users to follow each other, thus facilitating a dynamic social network.
 
 
-_3) Validation & Constraints_
+_4) Validation & Constraints_
 
 
 SQLAlchemy enforces constraints and validations directly within my model definitions. For example, in this `InnovationThread` class, the `title` column has a constraint to ensure that it is not empty and does not exceed 100 characters.
@@ -234,67 +256,41 @@ Furthermore, I have also defined unique constraints, such as in the `Follower` c
     )
 ```
 
+_5) CRUD Operations_
 
-
-
-
-
-
-
-
-```
-4) Schema Definitions and Serialization
-
-To facilitate data transfer, Marshmallow is used for schema definitions and serialization. Each model has a corresponding schema, ensuring data is formatted correctly when sent to clients. For example, UserSchema includes fields for posts, comments, and excludes sensitive information like passwords:
-```
-class UserSchema(ma.SQLAlchemyAutoSchema):
-    class Meta:
-        model = User
-        exclude = ("password",)
-    posts = ma.Nested(PostSchema, many=True)
-
-```
-5) CRUD Operations
 SQLAlchemy simplifies implementing CRUD operations. For instance, creating a new post involves instantiating a Post object and adding it to the session:
 ```
-new_post = Post(title="New Post", content="Content here", user_id=1)
-db.session.add(new_post)
-db.session.commit()
-
+new_post = Post(
+            body=body_data.get("body"),
+            timestamp=date.today(),
+            user_id=get_jwt_identity()
+        )
+        db.session.add(new_post)
+        db.session.commit()
 ```
-6) Querying and Filtering
-SQLAlchemy provides powerful querying capabilities. For example, filtering posts by a specific user can be done using:
-```
-user_posts = Post.query.filter_by(user_id=1).all()
-
-```
-This enhances efficiency by allowing complex queries with simple syntax.
-SQLAlchemy supports transactions and rollbacks, ensuring data integrity. If an operation fails, changes can be rolled back:
-```
-try:
-    db.session.commit()
-except Exception:
-    db.session.rollback()
-    raise
-
-```
-
-7) Transactions and Rollbacks
-SQLAlchemy supports transactions and rollbacks, ensuring data integrity. If an operation fails, changes can be rolled back:
-```
-try:
-    db.session.commit()
-except Exception:
-    db.session.rollback()
-    raise
-
-```
-This prevents partial updates and maintains database consistency.
+Within this example, I've created a new instance of the `Post` class, providing values for its fields like `body`, `timestamp` and `user_id`. This instance represents the  new record you want to insert into the database. `db.session.add(new_post)` is then used to schedule the new  post to be inserted into the database. SQLAlchemy is used to track the change in this session. `db.session.commit()` is then used to finalise the operation by committing the transaction. While this example only touches on the 'CREATE' operation, similar ORM functionalities are applied to the 'READ', 'UPDATE' and 'DELETE' operations throughout the API.
 
 
-SQLAlchemy's ORM features facilitate seamless integration between Python code and relational databases. By abstracting complex database operations, it enhances code readability, security, and maintainability, making it an essential component of this API.
+_6) Querying and Data Retrieval_
 
+SQLAlchemy provides powerful querying capabilities. Instead of writing raw SQL queries, SQLAlchemy's querying methods can be used to interact with the database. The use of this feature of the ORM within the API ultimately simplifies data retrieval and manipulation. Consider this example:
 ```
+@posts_bp.route("/", methods=["GET"])
+def get_all_posts():
+    stmt = db.select(Post).order_by(Post.timestamp.desc())
+    posts = db.session.scalars(stmt)
+    if posts is None:
+        return {"error": "No posts found."}, 404
+    return posts_schema.dump(posts), 200
+```
+`db.select(Post)` creates a SQLAlchemy `Select` object for querying the `Post` table. It represents a SQL `SELECT` statement that will retrieve records from the `Post` table. `db.session.scalars(stmt)` the executes the query represented within the `stmt` variable and trieves the results. The `scalars()` method returns the result as a list of individual `Post` objects, rather than a list of tuples or rows.
+
+
+_7) Lazy Loading_
+
+In SQLAlchemy, the `lazy` parameter determines how related objects are loaded when a query is made. I've utilised this feature within my `InnovationTrhead` object, like so: `posts = db.relationship("Post", back_populates="threads", lazy=True, cascade="all, delete-orphan")`. Within this example, the `lazy=True` parameter speicifies that the related `Post` objects should be loaded lazily. This means that when you access the "posts" attribute, SQLAlchemy will issue a separate query to load the posts associate with current instance (thread).
+
+
 
 # 6. Design an entity relationship diagram (ERD) for this app’s database, and explain how the relations between the diagrammed models will aid the database design. 
 ### This should focus on the database design BEFORE coding has begun, eg. during the project planning or design phase.
