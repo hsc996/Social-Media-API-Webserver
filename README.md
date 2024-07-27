@@ -1,13 +1,37 @@
 # T2A2_API_Webserver
 
+# Style guide
+
+Within this web application, I have attempted to ensure the code and comments adhere strcitly to the Google Python Style Guide.
+
+_Imports:_ The order of the imports include standard library imports at the top of the page, followed by third-party packages next and lastly local imports below that. Furthermore, the style guide dictates that only necessary modules are imported, which I have ensured throughout the application.
+
+_Docstrings:_ In order to provide a clear description of each endpoint, I've utilised docstrings that adhere to the Google Python Style Guide. Each of the docstrings provided in the code adhere to these guidlines by:
+
+1. Using a summary line -> each docstring begins with a succinct summary of what the function does.
+2. Providing detailed descriptions -> additional details about the function's behaviour, request parameters, and return values are included where needed.
+3. Listing arguments and return values -> clear descriptions of each argument and return value is provided, following the specified format. Within this style guide, exceptions are normally structured after these returns. Within my code, they have been grouped together witht he other "return" responses, as the excpetion handling within the code still uses "return" rather than "raised".
+4. Consistent formatting -> the formatting is consistent with the guidelines, including the use of triple double quotes and proper spacing.
+
+_Function Definitions:_ The functions are defined using descriptive, lowercase names with underscores. Furthermore, the function names aptly match their actions.
+
+_Error Handling:_ The code uses session commits and rollbacks ensure database consistency. It also catches ValidationError separately to handle specific cases.
+
+_Comments:_ In-line comments are used sparingly for clarity.
+
+_Naming Conventions:_ The naming conventions for variables and routes are clear and consistent, as well as promoting a clear separation of route methods. 
+
+
 
 # 1. Explain the problem that this app will solve, and explain how this app solves or addresses the problem.
 
-This API is designed as a specialised social media platform specifically for software developers, providing a centralised hub to bridge the gap between developers and cutting-edge technology innovation. The platform caters specifically to developers who are interested in experimenting with and contributing to developers who are interested in experimenting with and contributing to emerging technologies: For example, AI, blockchain, quantum computing and emerging programming languages. Users can create posts detailing their experiments, showcase prototypes, and share insights on novel techniques and tools. Similarly, users are also able to engage in "Innovation Threads'' that track the development of new ideas and concepts within these fields.
+The rapid advancement of technology has created a gap in communication and collaboration among software developers, particularly in emerging fields such as AI, blockchain, quantum computing and new programming languages. Many developers face challenges in staying updated with cutting-edge innovations and connecting with peers who chare similar interests. Traditional social media platforms are often too generalised and do not cater specifically to the needs of tech and software professionals. However, market research has shown that innovation platforms "provide an extensible software core on top of which third parties – also referred to as complementors – create applications (Cusumano et al., Citation2019; Tiwana et al., Citation2010)".
+
+This API is designed as a specialised social media platform specifically for software developers, providing a centralised hub to bridge the gap between developers and cutting-edge technology innovation. The platform caters specifically to developers who are interested in experimenting with and contributing to developers who are interested in experimenting with and contributing to emerging technologies. Users can create posts detailing their experiments, showcase prototypes, and share insights on novel techniques and tools. Similarly, users are also able to engage in "Innovation Threads" that track the development of new ideas and concepts within these fields.
 
 Furthermore, this platform aims to streamline these interactions by consolidating various community-building aspects into one dedicated space. The follower/following feature offers users to customise their feed to include updates on technologies of their interest, influential tech leaders and groundbreaking research. Additionally, the like and comment functionalities are designed to foster engagement and strengthen relationships within the developer community. In addition to traditional social media functionalities, this platform also incorporates features tailored to innovation and collaboration. This approach not only enhances communication and collaboration but also ensures that users can easily navigate and contribute to a vibrant, interconnected network. Users can also create their own "Innovation Threads'' in which they can track the development of new ideas within the community and exchange their opinions on emerging technology. Within my ERD I've included a proposed feature called "Tech Challenges'', where users can propose and solve technology-related problems. Despite my belief that this is a strong idea, it ultimately wasn't included in the final application due to time constraints.
 
-This application aims to achieve several key objectives. Firstly, it seeks to strengthen community relationships within the tech community. Secondly, it strives to facilitate developer engagement in innovation and by helping to identify gaps in emerging and evolving fields. By staying abreast of trends and offering a welcoming platform for open discussion, this platform will enable community members to meet these goals effectively.
+ This application aims to achieve several key objectives. Firstly, it seeks to strengthen community relationships within the tech community. Secondly, it strives to facilitate developer engagement in innovation and by helping to identify gaps in emerging and evolving fields. By staying abreast of trends and offering a welcoming platform for open discussion, this platform will enable community members to meet these goals effectively.
 
 
 
@@ -1152,8 +1176,14 @@ If JWT is provided but does not belong to the thread creator or admin, it will r
 # REFERENCES
 
 
-https://www.geeksforgeeks.org/normal-forms-in-dbms/
+GeeksforGeeks (2015) Normal Forms in DBMS - GeeksforGeeks, GeeksforGeeks. Available at: https://www.geeksforgeeks.org/normal-forms-in-dbms/.
+
+Google Python Style Guide (no date) android.googlesource.com. Available at: https://android.googlesource.com/platform/external/google-styleguide/+/refs/tags/android-s-beta-2/pyguide.md.
+
+Mastering Relational Database Structure (2024) myscale.com. Available at: https://myscale.com/blog/essential-components-relational-database-structure/#the-logical-structure-tables-keys-and-relationships
 
 PostgreSQL vs. SQL Server: What’s the difference? (no date) Google Cloud. Available at: https://cloud.google.com/learn/postgresql-vs-sql#section-8.
 
-Mastering Relational Database Structure (2024) myscale.com. Available at: https://myscale.com/blog/essential-components-relational-database-structure/#the-logical-structure-tables-keys-and-relationships
+Schreieck, M., Wiesche, M. and Krcmar, H. (2022) ‘Governing innovation platforms in multi-business organisations’, European Journal of Information Systems, pp. 1–22. Available at: https://doi.org/10.1080/0960085x.2022.2041371.
+
+

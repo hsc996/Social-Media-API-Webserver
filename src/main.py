@@ -1,6 +1,7 @@
 import os
 
 from flask import Flask
+
 from init import db, ma, bcrypt, jwt
 
 

@@ -1,12 +1,13 @@
 from datetime import datetime
 
-from init import db
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models.thread import InnovationThread, thread_schema, threads_schema
-from models.post import Post
 from marshmallow import ValidationError
 from utils import auth_thread_action
+
+from init import db
+from models.thread import InnovationThread, thread_schema, threads_schema
+from models.post import Post
 
 
 thread_bp = Blueprint("threads", __name__, url_prefix="/threads")

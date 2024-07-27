@@ -11,7 +11,7 @@ from utils import auth_unfollow_action
 follower_bp = Blueprint("follower", __name__, url_prefix="/users")
 
 
-# /users/<int:user_id>/followers
+# Fetches followers of a specific user - GET - /users/<int:user_id>/followers
 @follower_bp.route("/<int:user_id>/followers", methods=["GET"])
 def get_followers(user_id):
     """
@@ -67,7 +67,7 @@ def get_following(user_id):
     
 
 
-# /users/follow
+# Follows a specific user - POST - /users/follow
 @follower_bp.route("/follow", methods=["POST"])
 @jwt_required()
 def follow():
@@ -120,7 +120,7 @@ def follow():
 
 
 
-# /users/<int:user_id>/unfollow
+# Unfollow a specific user - DELETE - /users/<int:user_id>/unfollow
 @follower_bp.route("/<int:user_id>/unfollow", methods=["DELETE"])
 @jwt_required()
 @auth_unfollow_action

@@ -25,7 +25,7 @@ def view_profile(user_id):
     Args:
         user_id (int): The ID of the user to retrieve.
 
-    Return:
+    Returns:
         JSON: Serialised user profile with a 200 Ok status if the user exists.
         JSON: Error message with a 404 Not Found status if the user is not found.
     """
@@ -103,7 +103,7 @@ def register_user():
 
 
 
-# Login user - POST - auth/login
+# Login user - POST - /auth/login
 @auth_bp.route("/login", methods=["POST"])
 def login_user():
     """
