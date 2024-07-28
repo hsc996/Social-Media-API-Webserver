@@ -2,24 +2,25 @@
 
 # Style guide
 
-Within this web application, I have attempted to ensure the code and comments adhere strcitly to the Google Python Style Guide.
+
+Within this web application, I have attempted to ensure the code and comments adhere strictly to the Google Python Style Guide.
 
 _Imports:_ The order of the imports include standard library imports at the top of the page, followed by third-party packages next and lastly local imports below that. Furthermore, the style guide dictates that only necessary modules are imported, which I have ensured throughout the application.
 
-_Docstrings:_ In order to provide a clear description of each endpoint, I've utilised docstrings that adhere to the Google Python Style Guide. Each of the docstrings provided in the code adhere to these guidlines by:
+_Docstrings:_ In order to provide a clear description of each endpoint, I've utilised docstrings that adhere to the Google Python Style Guide. Each of the docstrings provided in the code adhere to these guidelines by:
 
 1. Using a summary line -> each docstring begins with a succinct summary of what the function does.
 2. Providing detailed descriptions -> additional details about the function's behaviour, request parameters, and return values are included where needed.
-3. Listing arguments and return values -> clear descriptions of each argument and return value is provided, following the specified format. Within this style guide, exceptions are normally structured after these returns. Within my code, they have been grouped together witht he other "return" responses, as the excpetion handling within the code still uses "return" rather than "raised".
+3. Listing arguments and return values -> clear descriptions of each argument and return value is provided, following the specified format. Within this style guide, exceptions are normally structured after these returns. Within my code, they have been grouped together with the other "return" responses, as the exception handling within the code still uses "return" rather than "raised".
 4. Consistent formatting -> the formatting is consistent with the guidelines, including the use of triple double quotes and proper spacing.
 
 _Function Definitions:_ The functions are defined using descriptive, lowercase names with underscores. Furthermore, the function names aptly match their actions.
 
-_Error Handling:_ The code uses session commits and rollbacks ensure database consistency. It also catches ValidationError separately to handle specific cases.
+_Error Handling:_ The code uses session commits and rollbacks to ensure database consistency. It also catches ValidationError separately to handle specific cases.
 
 _Comments:_ In-line comments are used sparingly for clarity.
 
-_Naming Conventions:_ The naming conventions for variables and routes are clear and consistent, as well as promoting a clear separation of route methods. 
+_Naming Conventions:_ The naming conventions for variables and routes are clear and consistent, as well as promoting a clear separation of route methods.
 
 
 
