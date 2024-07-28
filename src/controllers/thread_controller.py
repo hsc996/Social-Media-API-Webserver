@@ -3,17 +3,17 @@ from datetime import datetime
 from flask import Blueprint, request
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from marshmallow import ValidationError
-from utils import auth_thread_action
 
 from init import db
 from models.thread import InnovationThread, thread_schema, threads_schema
 from models.post import Post
+from utils import auth_thread_action, get_thread
 
 
 thread_bp = Blueprint("threads", __name__, url_prefix="/threads")
 
 
-# Fetch all threads - GET - /thread
+# Fetch all threads - GET - /threads
 @thread_bp.route("/", methods=["GET"])
 def get_all_threads():
     """
@@ -34,7 +34,7 @@ def get_all_threads():
         return {"error": "No threads found."}, 404
 
 
-# Fetch a single thread - GET - /thread/<int:thread_id>
+# Fetch a single thread - GET - /threads/<int:thread_id>
 @thread_bp.route("/<int:thread_id>", methods=["GET"])
 def get_single_thread(thread_id):
     """
@@ -49,8 +49,7 @@ def get_single_thread(thread_id):
         JSON: Serialised thread with a 200 OK status if the thread exists.
         JSON: Error message with a 404 Not Found status if the thread is not found.
     """
-    stmt = db.select(InnovationThread).filter_by(id=thread_id)
-    thread = db.session.scalar(stmt)
+    thread = get_thread(thread_id)
 
     if thread:
         return thread_schema.dump(thread), 200
@@ -120,8 +119,7 @@ def edit_thread(thread_id):
     """
     try:
         body_data = thread_schema.load(request.get_json(), partial=True)
-        stmt = db.select(InnovationThread).filter_by(id=thread_id)
-        thread = db.session.scalar(stmt)
+        thread = get_thread(thread_id)
 
         if not thread:
             return {"error": f"Thread with ID {thread_id} not found."}, 404
@@ -166,7 +164,7 @@ def delete_thread(thread_id):
         JSON: Error message with a 500 Internal Server Error status if an exception occurs.
     """
     try:
-        thread = InnovationThread.query.get(thread_id)
+        thread = get_thread(thread_id)
 
         if not thread:
             return {"error": f"Thread with ID {thread_id} not found."}, 404

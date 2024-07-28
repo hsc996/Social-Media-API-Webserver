@@ -5,7 +5,7 @@ from marshmallow.exceptions import ValidationError
 from init import db
 from models.like import Like, like_schema, likes_schema
 from models.post import Post
-from utils import auth_like_action
+from utils import auth_like_action, get_post
 
 
 likes_bp = Blueprint("likes", __name__, url_prefix="/posts/<int:post_id>/likes")
@@ -24,8 +24,7 @@ def get_post_likes(post_id):
         JSON: Serialised likes with 200 OK status if successful.
         JSON: Error message with a 404 Not Found status if the post is not found.
     """
-    stmt = db.select(Post).filter_by(id=post_id)
-    post = db.session.scalar(stmt)
+    post = get_post(post_id)
 
     if post is None:
         return {"error": f"Post with ID {post_id} not found."}, 404
@@ -54,8 +53,7 @@ def like_post(post_id):
     """
     try:
         user_id = get_jwt_identity()
-        stmt = db.select(Post).filter_by(id=post_id)
-        post = db.session.scalar(stmt)
+        post = get_post(post_id)
 
         if not post:
             return {"error": f"Post with ID {post_id} not found."}, 404
@@ -102,8 +100,7 @@ def unlike_post(post_id, like_id):
     """
     try:
         user_id = get_jwt_identity()
-        stmt = db.select(Post).filter_by(id=post_id)
-        post = db.session.scalar(stmt)
+        post = get_post(post_id)
 
         if post is None:
             return {"error": f"Post with ID {post_id} not found"}, 404

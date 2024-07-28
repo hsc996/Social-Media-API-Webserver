@@ -7,7 +7,7 @@ from marshmallow.exceptions import ValidationError
 from init import db
 from models.comment import Comment, comment_schema, comments_schema
 from models.post import Post
-from utils import auth_comment_action
+from utils import auth_comment_action, get_comment, get_post
 
 
 comments_bp = Blueprint("comments", __name__, url_prefix="/posts/<int:post_id>/comments")
@@ -30,9 +30,7 @@ def get_all_comments(post_id):
         JSON: Error message with a 404 Not Found status if the post is not found.
     """
     try:
-        post_stmt = db.select(Post).filter_by(id=post_id)
-        post = db.session.scalar(post_stmt)
-
+        post = get_post(post_id)
         if not post:
             return {"error": f"Post with ID '{post_id}' not found."}, 404
         
@@ -65,12 +63,11 @@ def get_single_comment(post_id, comment_id):
         JSON: Error message with a 404 Not Found status if the comment is not found.
     """
     try:
-        post = Post.query.get(post_id)
+        post = get_post(post_id)
         if not post:
             return {"error": f"Post with ID '{post_id}' not found."}, 404
         
-        comment = Comment.query.filter_by(id=comment_id, post_id=post_id).first()
-
+        comment = get_comment(comment_id, post_id)
         if not comment:
             return {"error": f"Comment with ID {comment_id} not found for Post with ID {post_id}"}, 404
 
@@ -99,13 +96,11 @@ def create_comment(post_id):
         JSON: Error message with a 400 Bad Request status if validation fails.
     """
     try:
-        body_data = request.get_json()
-        stmt = db.select(Post).filter_by(id=post_id)
-        post = db.session.scalar(stmt)
-
-        if post is None:
+        post = get_post(post_id)
+        if not post:
             return {"error": f"Post with ID '{post_id}' not found."}, 404
         
+        body_data = request.get_json()
         comment_body = body_data.get("comment_body", "").strip()
 
         if not comment_body or len(comment_body) > 200:
@@ -147,18 +142,14 @@ def edit_comment(post_id, comment_id):
     Returns:
         JSON: Serialised comment with a 200 OK status if update is successful.
         JSON: Error message with a 404 Not Found status if the post or comment is not found.
-        JSON: Error messgae with a 400 Bad Request status if validation fails.
+        JSON: Error message with a 400 Bad Request status if validation fails.
     """
     try:
-        post_stmt = db.select(Post).filter_by(id=post_id)
-        post = db.session.scalar(post_stmt)
-
+        post = get_post(post_id)
         if not post:
             return {"error": f"Post with ID {post_id} not found."}, 404
         
-        stmt = db.select(Comment).filter_by(id=comment_id)
-        comment = db.session.scalar(stmt)
-
+        comment = get_comment(comment_id, post_id)
         if not comment:
             return {"error": f"Comment with ID '{comment_id}' not found"}, 404
         
@@ -198,18 +189,14 @@ def delete_comment(post_id, comment_id):
 
     Returns:
         JSON: Success message with a 200 OK status if deleted is successful.
-        JSON: Erro message with a 404 Not Found status if the post or comment is not found.
+        JSON: Error message with a 404 Not Found status if the post or comment is not found.
     """
     try:
-        post_stmt = db.select(Post).filter_by(id=post_id)
-        post = db.session.scalar(post_stmt)
-
+        post = get_post(post_id)
         if not post:
             return {"error": f"Post with ID {post_id} not found."}, 404
         
-        stmt = db.select(Comment).filter_by(id=comment_id)
-        comment = db.session.scalar(stmt)
-
+        comment = get_comment(comment_id, post_id)
         if not comment:
             return {"error": f"Comment with ID '{comment_id}' not found"}, 404
         

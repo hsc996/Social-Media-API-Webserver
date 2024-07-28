@@ -1,9 +1,11 @@
 from functools import wraps
 from flask_jwt_extended import get_jwt_identity
 from sqlalchemy.orm.exc import NoResultFound
+from psycopg2 import errorcodes
 
 from init import db
 from models.user import User
+from models.post import Post
 from models.comment import Comment
 from models.like import Like
 from models.follower import Follower
@@ -152,3 +154,35 @@ def auth_unfollow_action(func):
         return func(*args, **kwargs)
     
     return wrapper
+
+
+def get_post(post_id):
+    stmt = db.select(Post).filter_by(id=post_id)
+    return db.session.scalar(stmt)
+
+def get_comment(comment_id, post_id):
+    stmt = db.select(Comment).filter_by(id=comment_id, post_id=post_id)
+    return db.session.scalar(stmt)
+
+def get_user_by_id(user_id):
+    stmt = db.select(User).filter_by(id=user_id)
+    return db.session.scalar(stmt)
+
+def get_thread(thread_id):
+    stmt = db.select(InnovationThread).filter_by(id=thread_id)
+    return db.session.scalar(stmt)
+
+def get_thread_post(post_id, thread_id):
+    stmt = db.select(Post).filter_by(id=post_id, thread_id=thread_id)
+    post = db.session.scalar(stmt)
+
+def handle_db_exceptions(error):
+    db.session.rollback()
+    error_map = {
+        errorcodes.UNIQUE_VIOLATION: "Username or email already exists",
+        errorcodes.NOT_NULL_VIOLATION: "Required field missing",
+        errorcodes.FOREIGN_KEY_VIOLATION: " Invalid reference to another table",
+        errorcodes.CHECK_VIOLATION: "Check constraint failed",
+        errorcodes.EXCLUSION_VIOLATION: "Exclusion constraint failed"
+    }
+    return {"error": error_map.get(error.orig.pgcode, "Database error")}, 500

@@ -5,7 +5,7 @@ from marshmallow.exceptions import ValidationError
 from init import db
 from models.follower import Follower, follower_schema, followers_schema
 from models.user import User
-from utils import auth_unfollow_action
+from utils import auth_unfollow_action, get_user_by_id
 
 
 follower_bp = Blueprint("follower", __name__, url_prefix="/users")
@@ -24,9 +24,8 @@ def get_followers(user_id):
         JSON: Serialised followers with a 200 OK status if successful.
         JSON: Error message with a 404 Not Found status if the user is not found.
     """
-    stmt = db.select(User).filter_by(id=user_id)
-    user = db.session.scalar(stmt)
-
+    user = get_user_by_id(user_id)
+    
     if user is None:
         return {"error": f"User with ID {user_id} not found."}, 404
     
@@ -48,8 +47,7 @@ def get_following(user_id):
         JSON: Serialised following list with a 200 OK status if successful.
         JSON: Error message with a 404 Not Found status if the user is not found.
     """
-    user_stmt = db.select(User).filter_by(id=user_id)
-    user = db.session.scalar(user_stmt)
+    user = get_user_by_id()
 
     if user is None:
         return {"error": f"User with ID {user_id} not found."}, 404

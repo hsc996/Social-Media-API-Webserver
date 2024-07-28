@@ -10,7 +10,7 @@ from models.like import Like
 from models.comment import Comment
 from models.thread import InnovationThread
 from controllers.comment_controller import comments_bp
-from utils import auth_user_action
+from utils import auth_user_action, get_post, get_thread, get_thread_post
 
 
 posts_bp = Blueprint("posts", __name__, url_prefix="/posts")
@@ -32,16 +32,12 @@ def get_all_posts():
     JSON: Serialised list of all posts with a 200 OK status if posts exist.
     JSON: Error message with a 404 Not Found status if no posts are found.
     """
-    # Query to select all posts ordered by timestamp (desc).
     stmt = db.select(Post).order_by(Post.timestamp.desc())
-    # Retrieve all posts.
     posts = db.session.scalars(stmt)
 
     if posts:
-         # Serialise the data and return posts if any exist.
          return posts_schema.dump(posts), 200
     else:
-        # Return error message if no posts are found.
         return {"error": "No posts found."}, 404
 
 
@@ -60,15 +56,10 @@ def get_single_post(post_id):
         JSON: Serialised post with a 200 OK status if the post exists.
         JSON: Error message with a 404 Not Found status if the post is not found.
     """
-    # Query to select a post by its ID.
-    stmt = db.select(Post).filter_by(id=post_id)
-    # Execute the query to retrieve a single post.
-    post = db.session.scalar(stmt)
+    post = get_post(post_id)
     if post:
-        # Serialise the data and return the post.
         return post_schema.dump(post), 200
     else:
-        # Return an error message if the post is not found.
         return {"error": f"Post with ID {post_id} not found."}, 404
 
 
@@ -87,23 +78,19 @@ def create_post():
         JSON: Error message with a 500 Internal Server Error status if an exception occur.
     """
     try:
-        # Load and validate the request data.
         body_data = post_schema.load(request.get_json())
 
         if not body_data or not isinstance(body_data["body"], str) or not body_data.get("body").strip():
             return {"error": "Invalid request body"}, 400
-        
-        # Create a new Post object.
+
         new_post = Post(
             body=body_data.get("body"),
             timestamp=date.today(),
             user_id=get_jwt_identity()
         )
-        # Add the new post to the session and commit it to the database.
         db.session.add(new_post)
         db.session.commit()
 
-        # Serialises the data and returns the new post.
         return post_schema.dump(new_post), 201
     
     except ValidationError as e:
@@ -111,6 +98,7 @@ def create_post():
     
     except Exception as e:
         db.session.rollback()
+        print(e)
         return {"error": "Internal Server Error"}, 500
 
 
@@ -135,11 +123,8 @@ def update_post(post_id):
         JSON: Error message with a 500 Internal Sevrer Error status if an excpetion occurs.
     """
     try:
-        # Load and validate the request data, allowing partial updates.
         body_data = post_schema.load(request.get_json(), partial=True)
-        # Query to select the post by ID.
-        stmt = db.select(Post).filter_by(id=post_id)
-        post = db.session.scalar(stmt)
+        post = get_post(post_id)
 
         if not post:
             return {"error": f"Post with ID {post_id} not found."}, 404
@@ -147,21 +132,18 @@ def update_post(post_id):
         if not body_data or not isinstance(body_data["body"], str) or not body_data.get("body").strip():
             return {"error": "Invalid request body"}, 400
 
-        # Update post fields with the new values from the request data.
         post.body = body_data.get("body", post.body)
         if body_data.get("timestamp"):
             post.timestamp = datetime.strptime(body_data["timestamp"], "%Y-%m-%d").date()
 
-        # Commit the changes to the database.
         db.session.commit()
-        
-        # Serialises the data and return the updated post.
+
         return post_schema.dump(post), 200
     
     except ValidationError as e:
         return {"error": e.messages}, 400
     
-    except Exception as e:
+    except Exception:
         db.session.rollback()
         return {"error": "Internal Server Error"}, 500
     
@@ -187,25 +169,21 @@ def delete_post(post_id):
         JSON: Error message with a 500 Internal Server Error status if an exception occurs.
     """
     try:
-        # Query to fetch the post by its ID.
-        post = Post.query.get(post_id)
+        post = get_post(post_id)
         
         if not post:
             return {"error": f"Post with ID {post_id} not found."}, 404
-        
-        # Delete associated likes and comments.
+
         db.session.query(Like).filter_by(post_id=post_id).delete()
         db.session.query(Comment).filter_by(post_id=post_id).delete()
 
-        # Delete the post and commit the changes.
         db.session.delete(post)
         db.session.commit()
 
         return {"message": f"Post with ID {post_id} successfully deleted."}, 200
     
-    except Exception as e:
+    except Exception:
         db.session.rollback()
-        print(e)
         return {"error": "Internal Server Error"}, 500
     
 
@@ -231,7 +209,6 @@ def get_all_posts_in_thread(thread_id):
         JSON: Error message with a 404 Not Found status ifi no posts are found in the thread. 
     """
     try:
-        # Query to select posts by thead ID, ordered by timestamp (desc).
         stmt = db.select(Post).filter_by(thread_id=thread_id).order_by(Post.timestamp.desc())
         posts = db.session.scalars(stmt).all()
 
@@ -240,8 +217,8 @@ def get_all_posts_in_thread(thread_id):
         
         return posts_schema.dump(posts), 200
     
-    except Exception as e:
-        print(f"Error: {e}")
+    except Exception:
+        db.session.rollback()
         return {"error": "Internal Server Error."}, 500
     
 
@@ -263,16 +240,15 @@ def get_posts_in_thread(thread_id, post_id):
         JSON: Error message with a 404 Not Found status fi the post is not found within the thread.
     """
     try:
-        # Query to select a post by thread ID and post ID.
-        stmt = db.select(Post).filter_by(id=post_id, thread_id=thread_id)
-        post = db.session.scalar(stmt)
+        post = get_thread_post(post_id, thread_id)
 
         if not post:
             return {"error": f"Post with ID {post_id} not found in Thread with ID {thread_id}."}, 404
         
         return post_schema.dump(post), 200
     
-    except Exception as e:
+    except Exception:
+        db.session.rollback()
         return {"error": "Internal Server Error."}, 500
     
 
@@ -296,27 +272,21 @@ def post_to_thread(thread_id):
             JSON: Error message with a 500 Internal Server Error status if an exception occurs.
         """
         try:
-            # Load and validate the request data.
             body_data = post_schema.load(request.get_json())
 
             if not body_data or not isinstance(body_data["body"], str) or not body_data.get("body").strip():
                 return {"error": "Invalid request body"}, 400
             
-            # Check if the specified thread exists.
-            stmt = db.select(InnovationThread).filter_by(id=thread_id)
-            thread = db.session.scalar(stmt)
-
+            thread = get_thread(thread_id)
             if thread is None:
                 return {"error": f"Thread with ID {thread_id} not found."}, 404
-            
-            # Create a new Post object in the specified thread.
+
             new_post = Post(
                 body=body_data.get("body"),
                 timestamp=date.today(),
                 user_id=get_jwt_identity(),
                 thread_id=thread_id
             )
-            # Add the new post to the session and commit it to the database.
             db.session.add(new_post)
             db.session.commit()
 
@@ -325,9 +295,8 @@ def post_to_thread(thread_id):
         except ValidationError as e:
             return {"error": str(e)}, 400
     
-        except Exception as e:
+        except Exception:
             db.session.rollback()
-            print(e)
             return {"error": "Internal Server Error"}, 500
 
 
@@ -353,21 +322,16 @@ def update_post_in_thread(thread_id, post_id):
         JSON: Error message with a 500 Internal Server Error status if an exception occurs.
     """
     try:
-        # Load and validate the request data, allowing partial updates.
         body_data = post_schema.load(request.get_json(), partial=True)
-        # Query to select the post by thread ID and post ID.
-        stmt = db.select(Post).filter_by(id=post_id, thread_id=thread_id)
-        post = db.session.scalar(stmt)
+        post = get_thread_post(post_id, thread_id)
 
         if not post:
             return {"error": f"Post with ID {post_id} not found in Thread with ID {thread_id}."}, 404
-        
-        # Update post fields with new values from the request data.
+
         post.body = body_data.get("body", post.body)
         if body_data.get("timestamp"):
             post.timestamp = datetime.strptime(body_data["timestamp"], "%Y-%m-%d").date()
-        
-        # Commit the changes to the database.
+
         db.session.commit()
 
         return post_schema.dump(post), 200
@@ -375,7 +339,7 @@ def update_post_in_thread(thread_id, post_id):
     except ValidationError as e:
         return {"error": e.messages}, 400
     
-    except Exception as e:
+    except Exception:
         db.session.rollback()
         return {"error": "Internal Server Error."}, 500
     
@@ -401,24 +365,19 @@ def delete_post_in_thread(thread_id, post_id):
         JSON: Error message with a 500 Internal Server Error status if an exception occurs.
     """
     try:
-        # Query to select the post by the thread ID and the post ID.
-        stmt = db.select(Post).filter_by(id=post_id, thread_id=thread_id)
-        post = db.session.scalar(stmt)
+        post = get_thread_post(post_id, thread_id)
 
         if not post:
             return {"error": f"Post with ID {post_id} not found in Thread with ID {thread_id}."}, 404
-        
-        # Deleted associated likes and comments.
+
         db.session.query(Like).filter_by(post_id=post_id).delete()
         db.session.query(Comment).filter_by(post_id=post_id).delete()
 
-        # Delete the post and commit the changes.
         db.session.delete(post)
         db.session.commit()
 
         return {"message": f"Post with ID {post_id} deleted successfully."}, 200
     
-    except Exception as e:
+    except Exception:
         db.session.rollback()
-        print(e)
         return {"error": "Internal Server Error."}, 500
