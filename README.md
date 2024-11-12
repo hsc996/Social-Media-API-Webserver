@@ -1,4 +1,4 @@
-# T2A2_API_Webserver
+# API Webserver
 
 # Style guide
 
@@ -22,9 +22,7 @@ _Comments:_ In-line comments are used sparingly for clarity.
 
 _Naming Conventions:_ The naming conventions for variables and routes are clear and consistent, as well as promoting a clear separation of route methods.
 
-
-
-# 1. Explain the problem that this app will solve, and explain how this app solves or addresses the problem.
+# Description
 
 The rapid advancement of technology has created a gap in communication and collaboration among software developers, particularly in emerging fields such as AI, blockchain, quantum computing and new programming languages. Many developers face challenges in staying updated with cutting-edge innovations and connecting with peers who chare similar interests. Traditional social media platforms are often too generalised and do not cater specifically to the needs of tech and software professionals. However, market research has shown that innovation platforms "provide an extensible software core on top of which third parties – also referred to as complementors – create applications (Cusumano et al., Citation2019; Tiwana et al., Citation2010)".
 
@@ -37,7 +35,7 @@ Furthermore, this platform aims to streamline these interactions by consolidatin
 
 
 
-# 2. Describe the way tasks are allocated and tracked in your project.
+# Planning & Progress Tracking
 
 
 Github project board: https://github.com/users/hsc996/projects/4
@@ -62,7 +60,7 @@ I developed an implementation plan using a Kanban board in Github Projects, whic
 
 
 
-# 3. List and explain the third-party services, packages and dependencies used in this app.
+# Packages & Dependencies
 
 
 **1. Flask**
@@ -158,7 +156,7 @@ Within this example, I've used this exception to handle a case where a "like" is
 
 
 
-# 4. Explain the benefits and drawbacks of this app’s underlying database system.
+# Benefits & Drawbacks of Database System
 
 
 PostgreSQL is an advanced, open-source relational database management system (RDBMS) which I've employed as the underlying database system within this API. It supports SQL for relational queries and JSON for non-relational queries, creating a powerful and flexible data framework for a wide range of applications. As a fully ACID-compliant database, PostgreSQL not only ensures reliable transactions and data integrity, but also boasts advanced features; such as complex query capabilities, indexing, full-text search, and support for custom data types and functions.
@@ -199,7 +197,7 @@ _6. Slower performance:_ As this database has a stronger focus on delivering com
 
 
 
-# 5. Explain the features, purpose and functionalities of the object-relational mapping system (ORM) used in this app.
+# Features & Functionality of ORM
 
 
 The object-relational mapping (ORM) system I have used within this API is SQLAlchemy. I opted to use SQLAlchemy as it provides high-level abstraction for interacting with relational databases. This abstraction simplifies database operations, enhances code readability and reduces risk of SQL injection.
@@ -341,8 +339,7 @@ Consider the `User` table: if one of the optional attributes was "skills" with t
 
 
 
-# 7. Explain the implemented models and their relationships, including how the relationships aid the database implementation.
-### This should focus on the database implementation AFTER coding has begun, eg. during the project development phase.
+# Model Relationships
 
 
 
@@ -519,11 +516,7 @@ After seeding the database, the column displayed should involve `id` (like_id, P
 
 
 
-# 8. Explain how to use this application’s API endpoints. Each endpoint should be explained, including the following data for each endpoint:
-## * HTTP verb
-## * Path or route
-## * Any required body or header data
-## * Response
+# Endpoints/Routes
 
 
 
