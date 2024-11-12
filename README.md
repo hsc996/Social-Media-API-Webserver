@@ -306,8 +306,7 @@ In SQLAlchemy, the `lazy` parameter determines how related objects are loaded wh
 
 
 
-# 6. Design an entity relationship diagram (ERD) for this app’s database, and explain how the relations between the diagrammed models will aid the database design. 
-### This should focus on the database design BEFORE coding has begun, eg. during the project planning or design phase.
+# Entity Relationship Diagram
 
 
 
